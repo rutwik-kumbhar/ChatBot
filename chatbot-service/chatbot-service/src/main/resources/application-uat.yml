@@ -1,0 +1,17 @@
+spring:
+  config:
+    activate:
+      on-profile: uat
+  datasource:
+    url: jdbc:postgresql://uat-db-host:5432/uatdb
+    username: uatuser
+    password: uatpassword
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+logging:
+  level:
+    root: INFO
