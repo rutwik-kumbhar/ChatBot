@@ -1,6 +1,7 @@
 package com.monocept.chatbot.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.monocept.chatbot.service.SendMessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +16,14 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 @Component
 public class WebSocketHandler extends TextWebSocketHandler {
-
     private static final Logger log = LoggerFactory.getLogger(WebSocketHandler.class);
+
+    private final SendMessageService sendMessageService;
+
+    public WebSocketHandler(SendMessageService sendMessageService) {
+        this.sendMessageService = sendMessageService;
+    }
+
     private static final CopyOnWriteArraySet<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
 
 
@@ -30,7 +37,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
         String userMessage = message.getPayload();
-        broadcast("Bot: You said - " + userMessage);
+        sendMessageService.send(userMessage);
     }
 
     public void broadcast(String message) {

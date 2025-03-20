@@ -1,4 +1,6 @@
 #For the mysql
+server:
+  port: 8080
 spring:
   config:
     activate:
@@ -17,9 +19,15 @@ logging:
   level:
     root: INFO
 
+mli:
+  message:
+    send:
+      url: http://localhost:8081/api/v1/message/send
+
 
 # For the postgres
-
+#server:
+#  port: 8080
 #spring:
 #  config:
 #    activate:
@@ -38,4 +46,7 @@ logging:
 #  level:
 #    root: INFO
 #
-
+#mli:
+#  message:
+#    send:
+#      url:
