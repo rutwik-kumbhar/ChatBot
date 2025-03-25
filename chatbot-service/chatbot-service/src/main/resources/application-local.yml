@@ -1,70 +1,25 @@
-#For the mysql
+# For the postgres
 server:
   port: 8080
-#spring:
- # config:
-  #  activate:
-   #   on-profile: local
-  #datasource:
-   # url: jdbc:mysql://localhost:3306/chatbot?useSSL=false
-    #username: root
-    #password: root
-    #driver-class-name: com.mysql.cj.jdbc.Driver
-  #jpa:
-   # database-platform: org.hibernate.dialect.MySQL8Dialect
-    #hibernate:
-     # ddl-auto: update
-   # show-sql: true
-#logging:
- # level:
-  #  root: INFO
-
-mli:
-  message:
-    send:
-      url: http://localhost:8081/api/v1/message/send
-
-
-# For the postgres
 spring:
   config:
     activate:
       on-profile: local
   datasource:
-    url: jdbc:postgresql://localhost:5432/chat_history_db
+    url: jdbc:postgresql://localhost:5432/chatbot
     username: postgres
-    password: postgres
+    password: root
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: none
-    show-sql: false
+      ddl-auto: update
+    show-sql: true
 logging:
   level:
     root: INFO
 
-#server:
-#  port: 8080
-#spring:
-#  config:
-#    activate:
-#      on-profile: local
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/localdb
-#    username: root
-#    password: root
-#    driver-class-name: org.postgresql.Driver
-#  jpa:
-#    database-platform: org.hibernate.dialect.PostgreSQLDialect
-#    hibernate:
-#      ddl-auto: update
-#    show-sql: true
-#logging:
-#  level:
-#    root: INFO
-#
-#mli:
-#  message:
-#    send:
-#      url:
+mli:
+  message:
+    send:
+      url: http://localhost:8081/api/v1/message/send
