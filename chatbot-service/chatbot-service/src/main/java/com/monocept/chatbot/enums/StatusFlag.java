@@ -1,5 +1,7 @@
 package com.monocept.chatbot.enums;
 
-public class StatusFlag {
+public enum StatusFlag {
+    COACH,
+    AGENDA
     
 }

@@ -1,15 +1,25 @@
 package com.monocept.chatbot.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.monocept.chatbot.enums.StatusFlag;
+import jakarta.persistence.*;
+import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
 
-@Table(name = "users")
+
+@Data
 @Entity
+@Table(name = "users")
 public class User {
+
+    @Id
+    @SequenceGenerator(name =  "user_seq", sequenceName = "user_seq", initialValue = 1 , allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE , generator = "user_seq")
+    @Column(name = "id")
+    private long id;
 
     @Column(length = 10)
     private String ssoId;
@@ -17,25 +27,31 @@ public class User {
     @Column(length = 10)
     private String agentId;
 
-    @Column(length =  100)
+    @Column(length =  100, nullable = false)
     private String name;
 
-    @Column(length = 30)
+    @Column(length = 30 , nullable = false, unique = true )
     private String email;
 
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private String role;
 
     @Column(length = 100)
     private String firebaseId;
 
-    @Column(length = 100)
+    @Column(length = 100 , nullable = false)
     private String deviceId;
+
     @Column(length = 100)
     private String sessionId;
 
+    @Enumerated(EnumType.STRING)
+    private StatusFlag statusFlag;
 
+    @CreationTimestamp // Automatically set on insert
     private ZonedDateTime createdAt;
+
+    @UpdateTimestamp
     private ZonedDateTime updatedAt;
 
 }
