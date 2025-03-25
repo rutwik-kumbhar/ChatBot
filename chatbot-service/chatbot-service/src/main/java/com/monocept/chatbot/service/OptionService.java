@@ -6,6 +6,9 @@ import java.util.List;
 
 public interface OptionService {
 
-    List<Option> getAllOptions();
+    List<String> getAllOptions();
+    Option addOptions(List<String> options);
+    void  deleteOption(String name);
+
 
 }

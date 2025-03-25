@@ -1,10 +1,10 @@
 package com.monocept.chatbot.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
+import lombok.Builder;
 
-
+@Builder
 @Entity
 @Table(name = "option")
 public class Option {

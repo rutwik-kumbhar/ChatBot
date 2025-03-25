@@ -1,6 +1,5 @@
 package com.monocept.chatbot.service.impl;
 
-import com.monocept.chatbot.entity.PlaceHolder;
 import com.monocept.chatbot.reposiotry.PlaceholderRepository;
 import com.monocept.chatbot.service.PlaceholderService;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,7 @@ public class PlaceHolderServiceImpl implements PlaceholderService {
     }
 
     @Override
-    public List<PlaceHolder> getAllPlaceholders() {
-        return  placeholderRepository.findByActiveTrue();
+    public List<String> getAllPlaceholders() {
+        return  placeholderRepository.findActivePlaceholderNames();
     }
 }

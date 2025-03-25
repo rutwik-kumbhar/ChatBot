@@ -1,6 +1,6 @@
 package com.monocept.chatbot.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.monocept.chatbot.entity.Option;
 import com.monocept.chatbot.entity.PlaceHolder;
 import com.monocept.chatbot.entity.User;
@@ -12,6 +12,7 @@ import com.monocept.chatbot.model.response.UserInfo;
 import com.monocept.chatbot.reposiotry.UserRepository;
 import com.monocept.chatbot.service.OptionService;
 import com.monocept.chatbot.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -48,13 +50,15 @@ public class UserServiceImpl implements UserService {
         User user  = userOptional.orElseThrow(() -> new ResourcesNotFoundException("User not found by give email " + email));
 
         UserInfo userInfo = userMapper.mapToUserInfo(user);
-        List<Option> options = optionService.getAllOptions();
-        List<PlaceHolder> placeholders = placeHolderService.getAllPlaceholders();
+        List<String> options = optionService.getAllOptions();
+        List<String> placeholders = placeHolderService.getAllPlaceholders();
+
+        log.info("getUserConfiguration : place holders : {} ", placeholders);
 
         return UserConfigResponse.builder()
                 .user(userInfo)
-                .placeHolders(placeholders)
                 .options(options)
+                .placeHolders(placeholders)
                 .botName("Ely") // Need to fetch later from db
                 .statusFlag(user.getStatusFlag())
                 .dateTime(ZonedDateTime.now()).build();

@@ -18,8 +18,18 @@ public class OptionServiceImpl implements OptionService {
     }
 
     @Override
-    public List<Option> getAllOptions() {
-        return optionRepository.findByActiveTrue();
+    public List<String> getAllOptions() {
+        return optionRepository.findActiveOptionNames();
+    }
+
+    @Override
+    public Option addOptions(List<String> options) {
+        return null;
+    }
+
+    @Override
+    public void deleteOption(String name) {
+
     }
 
 }

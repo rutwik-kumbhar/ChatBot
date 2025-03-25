@@ -16,8 +16,8 @@ import java.util.List;
 @Data
 public class UserConfigResponse {
     private UserInfo user;
-    private List<Option> options;
-    private List<PlaceHolder> placeHolders;
+    private List<String> options;
+    private List<String> placeHolders;
     private String botName;
     private StatusFlag statusFlag;
     private ZonedDateTime dateTime;

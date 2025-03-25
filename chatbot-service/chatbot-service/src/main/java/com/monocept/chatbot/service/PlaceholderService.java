@@ -6,5 +6,7 @@ import java.util.List;
 
 public interface PlaceholderService {
 
-    List<PlaceHolder> getAllPlaceholders();
+    List<String> getAllPlaceholders();
+    PlaceHolder addPlaceholder();
+    PlaceHolder deletePlaceholder();
 }
