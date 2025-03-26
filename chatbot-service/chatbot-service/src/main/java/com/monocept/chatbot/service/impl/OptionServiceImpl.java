@@ -23,13 +23,16 @@ public class OptionServiceImpl implements OptionService {
     }
 
     @Override
-    public Option addOptions(List<String> options) {
-        return null;
+    public List<Option> addOptions(List<String> options) {
+        List<Option> list = options.stream().map(s -> Option.builder().name(s).active(true).build()).toList();
+        return optionRepository.saveAll(list);
     }
 
     @Override
-    public void deleteOption(String name) {
-
+    public String updateOption(String name) {
+        return optionRepository.deactivateOptionByName(name) == 0
+                ? "No matching record found to update."
+                : "Record  updated.";
     }
 
 }

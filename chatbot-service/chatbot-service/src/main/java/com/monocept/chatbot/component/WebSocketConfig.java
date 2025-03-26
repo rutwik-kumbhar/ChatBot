@@ -1,4 +1,4 @@
-package com.monocept.chatbot.config;
+package com.monocept.chatbot.component;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.WebSocketHandler;

@@ -7,8 +7,8 @@ import java.util.List;
 public interface OptionService {
 
     List<String> getAllOptions();
-    Option addOptions(List<String> options);
-    void  deleteOption(String name);
+    List<Option> addOptions(List<String> options);
+    String  updateOption(String name);
 
 
 }

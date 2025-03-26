@@ -1,8 +1,6 @@
-package com.monocept.chatbot.config;
+package com.monocept.chatbot.component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.monocept.chatbot.service.SendMessageService;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
