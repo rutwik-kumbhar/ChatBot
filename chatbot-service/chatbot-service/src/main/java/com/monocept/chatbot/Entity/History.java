@@ -42,10 +42,10 @@ public class History {
     private String agentId;
 
     @Column(name = "email")
-    private String Email;
+    private String email;
 
     @Column(name = "session")
-    private String Session;
+    private String session;
 
 }
 

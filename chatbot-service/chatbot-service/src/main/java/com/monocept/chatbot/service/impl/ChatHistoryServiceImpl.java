@@ -1,13 +1,16 @@
 package com.monocept.chatbot.service.impl;
 
-import com.monocept.chatbot.ChatDTO.HistoryDTO;
-import com.monocept.chatbot.Entity.History;
-import com.monocept.chatbot.Exception.ChatHistoryNotFoundException;
+import com.monocept.chatbot.exceptions.ResourcesNotFoundException;
+import com.monocept.chatbot.model.dto.HistoryDTO;
 import com.monocept.chatbot.Exception.InvalidEmailException;
-import com.monocept.chatbot.Repository.ChatHistoryRepository;
+import com.monocept.chatbot.reposiotry.ChatHistoryRepository;
 import com.monocept.chatbot.service.ChatHistoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,7 +29,7 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
     }
 
     @Override
-    public List<HistoryDTO> getMessagesFromLast90Days(String email) {
+    public Page<HistoryDTO> getMessagesFromLast90Days(String email,int page, int size) {
         if (email == null || email.isEmpty()) {
             logger.error("Email is null or empty");
             throw new InvalidEmailException("Email is null or empty");
@@ -35,13 +38,16 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
 
         // Calculate the dateTime 90 days ago from the current date
         LocalDateTime dateTime90DaysAgo = LocalDateTime.now().minus(90, ChronoUnit.DAYS);
+        // Create a Pageable object for pagination
+        Pageable pageable = PageRequest.of(page, size);
+
         // Fetch messages from the repository (handle null with Optional)
-        List<HistoryDTO> messages = Optional.ofNullable(chatHistoryRepository.findMessagesFromLast90DayswrtEmail(dateTime90DaysAgo,email))
-                .orElse(Collections.emptyList());  // Return empty list if no messages are found
+        Page<HistoryDTO> messages = chatHistoryRepository.findMessagesFromLast90DayswrtEmail(dateTime90DaysAgo,email,pageable);
+               // .orElse(Collections.emptyList());  // Return empty list if no messages are found
 
         if (messages.isEmpty()) {
             logger.warn("No messages found for email: {}", email);
-            throw new ChatHistoryNotFoundException("No messages found for the provided email in the last 90 days.");
+            throw new ResourcesNotFoundException("No messages found for the provided email in the last 90 days.");
         }
         return messages;
 

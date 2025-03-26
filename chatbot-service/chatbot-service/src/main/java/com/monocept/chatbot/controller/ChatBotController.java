@@ -1,13 +1,13 @@
 package com.monocept.chatbot.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.monocept.chatbot.ChatDTO.HistoryDTO;
-import com.monocept.chatbot.Entity.History;
-import com.monocept.chatbot.MasterResponse.MasterResponse;
-import com.monocept.chatbot.Request.MessageRequest;
+import com.monocept.chatbot.model.dto.HistoryDTO;
+import com.monocept.chatbot.model.request.MessageRequest;
+import com.monocept.chatbot.model.response.MasterResponse;
 import com.monocept.chatbot.service.ChatHistoryService;
 import com.monocept.chatbot.service.ReceivedMessageSocketService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,25 +31,25 @@ public class ChatBotController {
          return  new ResponseEntity<>("Message Send to Webhook Successfully", HttpStatus.OK);
     }
 
-    @PostMapping ("/messages/last3months")
-    public ResponseEntity<MasterResponse<List<HistoryDTO>>> getMessagesFromLast90Days(@RequestBody MessageRequest messageRequest) {
+    @PostMapping ("/messages")
+    public ResponseEntity<MasterResponse<Page<HistoryDTO>>> getMessagesFromLast90Days(@RequestBody MessageRequest messageRequest) {
         try {
             logger.info("Received request to fetch messages for Email: {}", messageRequest.getEmail());
             String email = messageRequest.getEmail();
             // Call to service layer to get messages from the last 90 days
-            List<HistoryDTO> messages = chatHistoryService.getMessagesFromLast90Days(email);
-            MasterResponse<List<HistoryDTO>> response =null;
+            Page<HistoryDTO> messages = chatHistoryService.getMessagesFromLast90Days(email,messageRequest.page,messageRequest.size);
+            MasterResponse<Page<HistoryDTO>> response;
             if (messages != null && !messages.isEmpty()) {
                 // Success case, messages found
-                response = new MasterResponse<>("success", "Messages retrieved successfully.", messages);
+                response = new MasterResponse<>("success", 200,"Messages retrieved successfully.", messages);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                response = new MasterResponse<>("failure", "No messages found in the last 90 days.", null);
+                response = new MasterResponse<>("failure", 201,"No messages found in the last 90 days.", null);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
         } catch (Exception ex) {
             logger.error("Error occurred while fetching messages: {}", ex.getMessage(), ex);
-            MasterResponse<List<HistoryDTO>> errorResponse = new MasterResponse<>("error", "An unexpected error occurred.", null);
+            MasterResponse<Page<HistoryDTO>> errorResponse = new MasterResponse<>("error", 401,"An unexpected error occurred.", null);
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
