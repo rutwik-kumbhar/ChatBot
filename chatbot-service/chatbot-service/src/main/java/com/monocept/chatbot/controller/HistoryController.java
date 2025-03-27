@@ -10,8 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+@Validated
 @RestController
 @RequestMapping("/api/v1/chatbot")
 public class HistoryController {
@@ -25,7 +28,7 @@ public class HistoryController {
     }
 
     @PostMapping("/HistoryChat")
-    public ResponseEntity<MasterResponse<Page<HistoryDTO>>> getMessagesFromLast90Days(@RequestBody MessageRequest messageRequest) {
+    public ResponseEntity<MasterResponse<Page<HistoryDTO>>> getMessagesFromLast90Days(@Valid @RequestBody MessageRequest messageRequest) {
         try {
             logger.info("Received request to fetch messages for Email: {}", messageRequest.getEmail());
             String email = messageRequest.getEmail();
