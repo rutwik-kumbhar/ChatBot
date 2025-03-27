@@ -6,6 +6,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MessageRequest {
+  //  @Email(message = "Invalid email format")
     public String email;
     public int page;
     public int size;

@@ -5,6 +5,7 @@ import com.monocept.chatbot.model.dto.HistoryDTO;
 import com.monocept.chatbot.Exception.InvalidEmailException;
 import com.monocept.chatbot.reposiotry.ChatHistoryRepository;
 import com.monocept.chatbot.service.ChatHistoryService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,7 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
     }
 
     @Override
+    @Transactional
     public Page<HistoryDTO> getMessagesFromLast90Days(String email,int page, int size) {
         if (email == null || email.isEmpty()) {
             logger.error("Email is null or empty");
