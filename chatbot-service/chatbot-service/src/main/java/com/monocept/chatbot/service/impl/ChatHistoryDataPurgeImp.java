@@ -24,12 +24,12 @@ public class ChatHistoryDataPurgeImp  implements ChatHistoryDataPurge {
     @Override
     @Transactional
     //Scheduled to run every day at midnight (adjust as necessary)
-        @Scheduled(cron = "0 45 17 * * ?")
-
+    @Scheduled(cron = "0 45 17 * * ?")
     public void deleteHistoryData90Days(){
             LocalDateTime date90DaysAgo = LocalDateTime.now().minusDays(90);
         try {
             logger.info("Data purge scheduled. Deleting records older than 90 days. Date threshold: {}", date90DaysAgo);
+
             // Delete data older than 90 days
             chatHistoryRepository.deleteByDateTimeBefore(date90DaysAgo);
             logger.info("Old data deleted: records older than 90 days.");
