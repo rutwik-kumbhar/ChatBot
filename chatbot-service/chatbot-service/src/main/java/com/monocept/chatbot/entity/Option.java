@@ -15,7 +15,4 @@ public class Option {
     private long id;
 
     public String name;
-
-    @JsonIgnore
-    public  boolean active;
 }

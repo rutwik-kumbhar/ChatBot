@@ -1,9 +1,11 @@
 package com.monocept.chatbot.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.ToString;
 
+@Builder
 @ToString
 @Entity
 @Table(name = "placeholder")
@@ -16,9 +18,5 @@ public class PlaceHolder {
     private long id;
 
     private String name;
-
-
-    private boolean active;
-
 
 }

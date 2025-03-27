@@ -11,17 +11,17 @@ import java.util.List;
 
 public interface OptionRepository  extends JpaRepository<Option, Long> {
 
-    @Query(value = "SELECT name FROM option WHERE active = true", nativeQuery = true)
-    List<String> findActiveOptionNames();
+    @Query(value = "SELECT name FROM option", nativeQuery = true)
+    List<String> findOptionNames();
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE option SET active = false WHERE name = :name AND active = true", nativeQuery = true)
-    int deactivateOptionByName(@Param("name") String name);
-
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE option SET option = name WHERE name = :name AND active = true")
+    @Query(value = "UPDATE option SET option = name WHERE name = :name", nativeQuery = true)
     int updateOptionByName(@Param("name") String name);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM option WHERE name = :name", nativeQuery = true)
+    int  deleteByOptionName(@Param("name") String name);
 
 }
