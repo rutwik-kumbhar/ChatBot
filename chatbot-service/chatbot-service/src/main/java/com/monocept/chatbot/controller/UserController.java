@@ -7,11 +7,13 @@ import com.monocept.chatbot.model.request.GetUserConfigRequest;
 import com.monocept.chatbot.model.response.MasterResponse;
 import com.monocept.chatbot.model.response.UserConfigResponse;
 import com.monocept.chatbot.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
@@ -25,6 +27,7 @@ public class UserController {
 
     @PostMapping("/user/config")
     public ResponseEntity<MasterResponse<UserConfigResponse>> getUserConfig(@RequestBody GetUserConfigRequest request) {
+        log.info("getUserConfig  {}", request );
         try {
             UserConfigResponse userConfiguration = userService.getUserConfiguration(request);
             MasterResponse<UserConfigResponse> response = new MasterResponse<>(

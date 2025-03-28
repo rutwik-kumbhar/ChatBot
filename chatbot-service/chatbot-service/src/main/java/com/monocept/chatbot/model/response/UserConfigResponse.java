@@ -20,6 +20,6 @@ public class UserConfigResponse {
     private List<String> placeHolders;
     private String botName;
     private StatusFlag statusFlag;
-    private ZonedDateTime dateTime;
+    private String dateTime;
 
 }

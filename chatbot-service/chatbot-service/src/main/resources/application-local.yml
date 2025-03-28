@@ -19,7 +19,20 @@ logging:
   level:
     root: INFO
 
+payload:
+  encryption:
+    key: MK234S98CLKSJRE98WEK54JFSD989SDF
+    iv: 9LP300U3920Y3KK3
+    type: AES/CBC/PKCS5Padding
+  decryption:
+    type: AES/CBC/NoPadding
+
+
+
 mli:
   message:
     send:
       url: http://localhost:8081/api/v1/message/send
+
+
+

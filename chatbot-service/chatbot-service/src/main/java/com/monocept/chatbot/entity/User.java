@@ -48,10 +48,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private StatusFlag statusFlag;
 
-    @CreationTimestamp // Automatically set on insert
+//    @CreationTimestamp // Automatically set on insert time
     private ZonedDateTime createdAt;
 
-    @UpdateTimestamp
+//    @UpdateTimestamp  // Automatically set on insert time
     private ZonedDateTime updatedAt;
 
 }

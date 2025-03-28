@@ -26,7 +26,7 @@ public class HistoryController {
         this.chatHistoryDataPurge = chatHistoryDataPurge;
     }
 
-    @PostMapping("/historychat")
+    @PostMapping("/history/chat")
     public ResponseEntity<MasterResponse<Page<HistoryDTO>>> getMessagesFromLast90Days(@Valid @RequestBody MessageRequest messageRequest) {
         try {
             logger.info("Received request to fetch messages for Email: {}", messageRequest.getEmail());

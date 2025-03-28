@@ -3,9 +3,7 @@ package com.monocept.chatbot.model.mapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.monocept.chatbot.entity.User;
 import com.monocept.chatbot.model.response.UserInfo;
-import lombok.Data;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 @Component
 public class UserMapper {

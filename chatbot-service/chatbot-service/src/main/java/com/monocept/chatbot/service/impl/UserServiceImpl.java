@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
                 .placeHolders(placeholders)
                 .botName("Ely") // Need to fetch later from db
                 .statusFlag(user.getStatusFlag())
-                .dateTime(ZonedDateTime.now()).build();
+                .dateTime(ZonedDateTime.now().toString()).build();
 
 
 
