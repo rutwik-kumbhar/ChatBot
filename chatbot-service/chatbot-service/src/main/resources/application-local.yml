@@ -6,7 +6,7 @@ spring:
     activate:
       on-profile: local
   datasource:
-    url: jdbc:postgresql://localhost:5432/chat
+    url: jdbc:postgresql://localhost:5432/chatbot
     username: postgres
     password: root
     driver-class-name: org.postgresql.Driver
