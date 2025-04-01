@@ -16,10 +16,10 @@ public interface ChatHistoryRepository extends JpaRepository<History, Long> {
   //  @Query(value = "SELECT * FROM chat_history c WHERE c.date_time >= :dateTime AND c.email = :email", nativeQuery = true)
    // List<History> findMessagesFromLast90DayswrtEmail(LocalDateTime dateTime, String email);
 
-    @Query("SELECT new com.monocept.chatbot.model.dto.HistoryDTO(c.msgId, c.msg, c.messageTo, c.dateTime, c.replyId, c.type, c.mediaUrl, c.activity) FROM History c WHERE c.dateTime >= :dateTime AND c.email = :email order by dateTime DESC" )
-    Page<HistoryDTO> findMessagesFromLast90DayswrtEmail(@Param("dateTime") LocalDateTime dateTime, @Param("email") String email, Pageable pageable );
+   @Query("SELECT new com.monocept.chatbot.model.dto.HistoryDTO(c.msgId, c.msg, c.messageTo, c.dateTime, c.replyId, c.type, c.mediaUrl, c.activity) FROM History c WHERE c.dateTime >= :dateTime AND c.email = :email  group by dateTime,msgId" )
+    Page<HistoryDTO> findMessagesFromDayswrtEmail(@Param("dateTime") LocalDateTime dateTime, @Param("email") String email, Pageable pageable );
 
-  //  void deleteByDateTimeBefore(LocalDateTime dateTime);
+    //  void deleteByDateTimeBefore(LocalDateTime dateTime);
   @Modifying
   @Query("DELETE FROM History h WHERE h.dateTime < :dateTime")
   void deleteByDateTimeBefore(@Param("dateTime") LocalDateTime dateTime);
