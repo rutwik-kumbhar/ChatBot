@@ -24,7 +24,7 @@ public class ChatHistoryDataPurgeImp  implements ChatHistoryDataPurge {
     @Override
     @Transactional
     //Scheduled to run every day at midnight (adjust as necessary)
-    @Scheduled(cron = "0 45 17 * * ?")
+    @Scheduled(cron = "0 54 17 * * ?")
     public void deleteHistoryData90Days(){
             LocalDateTime date90DaysAgo = LocalDateTime.now().minusDays(90);
         try {

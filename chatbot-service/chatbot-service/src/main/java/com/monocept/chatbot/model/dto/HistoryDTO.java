@@ -20,4 +20,5 @@ public class HistoryDTO {
     private String mediaUrl;
     private String activity;
 
+
 }

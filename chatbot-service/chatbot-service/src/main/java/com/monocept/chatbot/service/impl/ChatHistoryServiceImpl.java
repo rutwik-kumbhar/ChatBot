@@ -82,7 +82,7 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
             }
         }
 
-        // Now, fetch the remaining messages for the next 87 days (from 90 days - 3 days) from the database
+        //  fetch the remaining messages for the next 87 days from the database
         LocalDateTime dateTime87DaysAgo = LocalDateTime.now().minus(87, ChronoUnit.DAYS);
         Pageable pageableFor87Days = PageRequest.of(page, size);
         Page<HistoryDTO> messagesFromDb87Days = chatHistoryRepository.findMessagesFromDayswrtEmail(dateTime87DaysAgo, email, pageableFor87Days);

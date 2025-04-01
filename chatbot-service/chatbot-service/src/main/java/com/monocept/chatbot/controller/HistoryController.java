@@ -1,5 +1,6 @@
 package com.monocept.chatbot.controller;
 
+import com.monocept.chatbot.Entity.History;
 import com.monocept.chatbot.model.dto.HistoryDTO;
 import com.monocept.chatbot.model.request.MessageRequest;
 import com.monocept.chatbot.model.response.MasterResponse;
