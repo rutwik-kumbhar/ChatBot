@@ -1,10 +1,11 @@
 package com.monocept.chatbot.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Data;
 
 @Builder
+@Data
 @Entity
 @Table(name = "option")
 public class Option {
@@ -14,5 +15,5 @@ public class Option {
     @GeneratedValue(strategy = GenerationType.SEQUENCE , generator = "option_seq")
     private long id;
 
-    public String name;
+    private String name;
 }

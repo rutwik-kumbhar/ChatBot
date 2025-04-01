@@ -28,6 +28,9 @@ payload:
     type: AES/CBC/NoPadding
 
 
+redis:
+  host: localhost
+  port: 6000
 
 mli:
   message:

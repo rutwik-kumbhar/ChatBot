@@ -1,8 +1,8 @@
 package com.monocept.chatbot.service.impl;
 
-import com.monocept.chatbot.entity.Option;
 import com.monocept.chatbot.entity.PlaceHolder;
 import com.monocept.chatbot.model.request.OptionPlaceholderRequest;
+import com.monocept.chatbot.model.request.UpdationAcknowledgmentResponse;
 import com.monocept.chatbot.reposiotry.PlaceholderRepository;
 import com.monocept.chatbot.service.PlaceholderService;
 import org.springframework.stereotype.Service;
@@ -51,11 +51,18 @@ public class PlaceHolderServiceImpl implements PlaceholderService {
     @Override
     public Object optionDataHandler(OptionPlaceholderRequest request)  {
         return switch (request.getMethodType().name().toLowerCase()) {
-            case "add" -> this.addPlaceholders(request.getName());
-            case "update" -> processOptions(request.getName(), this::updatePlaceholder);
-            case "delete" -> processOptions(request.getName(), this::deletePlaceholder);
+            case "add" -> this.addPlaceholders(request.getNames());
+            case "update" -> processOptions(request.getNames(), this::updatePlaceholder);
+            case "delete" -> processOptions(request.getNames(), this::deletePlaceholder);
             default -> throw  new NoSuchElementException("Invalid option perform");
         };
+    }
+
+    @Override
+    public UpdationAcknowledgmentResponse<PlaceHolder> updatePlaceholderHandler(List<String> names) {
+        placeholderRepository.deleteAllOptions();
+        List<PlaceHolder> placeHolders = addPlaceholders(names);
+        return new UpdationAcknowledgmentResponse<>(placeHolders.size(),  placeHolders );
     }
 
     private Map<String, String> processOptions(List<String> options, Function<String, String> action) {

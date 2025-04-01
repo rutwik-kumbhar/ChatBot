@@ -3,10 +3,11 @@ package com.monocept.chatbot.entity;
 
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Data;
 import lombok.ToString;
 
 @Builder
-@ToString
+@Data
 @Entity
 @Table(name = "placeholder")
 public class PlaceHolder {

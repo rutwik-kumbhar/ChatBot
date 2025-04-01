@@ -16,12 +16,19 @@ public interface OptionRepository  extends JpaRepository<Option, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE option SET option = name WHERE name = :name", nativeQuery = true)
-    int updateOptionByName(@Param("name") String name);
+    @Query(value = "UPDATE option SET name = :newValue WHERE name = :oldValue", nativeQuery = true)
+    int updateOptionByName(@Param("newValue") String newValue, @Param("oldValue") String oldValue);
+
 
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM option WHERE name = :name", nativeQuery = true)
-    int  deleteByOptionName(@Param("name") String name);
+    @Query(value = "DELETE FROM option WHERE name IN :names", nativeQuery = true)
+    int deleteByOptionNames(@Param("names") List<String> names);
+
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM option", nativeQuery = true)
+    void deleteAllOptions();
 
 }
