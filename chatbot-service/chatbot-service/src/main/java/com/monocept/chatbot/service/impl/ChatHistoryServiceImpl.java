@@ -77,7 +77,7 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
                 finalMessages.addAll(messagesFromDb3Days.getContent());
 
                 // Cache the recent 3 days' messages in Redis with a TTL of 1 hour
-               // redisChatHistoryRepository.saveChatHistoryDetails(email,finalMessages);
+              //  redisChatHistoryRepository.saveChatHistoryDetails(email,finalMessages);
             //    redisTemplate.opsForValue().set(redisKey, messagesFromDb3Days, 1, TimeUnit.HOURS);
             }
         }
@@ -112,12 +112,7 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
 
         // Save the new message in Redis
         redisChatHistoryRepository.saveChatHistoryDetails(email,newMessage);
-       // String redisKey = REDIS_KEY_PREFIX + email + ":last3days";
        // redisTemplate.opsForList().leftPush(redisKey, newMessage); // Store new message at the start of the list in Redis
-
-        // Set a TTL of 3 days for the Redis entry
-        //redisTemplate.expire(redisKey, 3, TimeUnit.DAYS);
-
         // After saving the message in Redis, move older messages to the database
         redisChatHistoryRepository.moveOldMessagesToDb(email);
     }
