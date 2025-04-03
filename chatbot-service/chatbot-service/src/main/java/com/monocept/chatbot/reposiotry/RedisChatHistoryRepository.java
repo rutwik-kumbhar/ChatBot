@@ -26,7 +26,6 @@ public class RedisChatHistoryRepository {
         logger.info("Saving chat history details in Redis for email: {}", email);
         try {
             String key = email + "_chatHistoryDetails";
-
             // Convert History object to HistoryDTO (or other relevant object) before saving
             HistoryDTO chatHistoryDTO = convertToDTO(chatHistoryDetails);
             redisTemplate.opsForHash().put(HASH_KEY, key, chatHistoryDTO);

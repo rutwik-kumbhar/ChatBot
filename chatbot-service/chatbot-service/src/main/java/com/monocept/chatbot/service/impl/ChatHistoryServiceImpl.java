@@ -1,5 +1,4 @@
 package com.monocept.chatbot.service.impl;
-
 import com.monocept.chatbot.Entity.History;
 import com.monocept.chatbot.exceptions.ResourcesNotFoundException;
 import com.monocept.chatbot.model.dto.HistoryDTO;
@@ -13,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -40,7 +38,6 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
             throw new InvalidEmailException("Email is null or empty");
         }
         // Get the 3-day chat history from Redis
-        LocalDateTime dateTime3DaysAgo = LocalDateTime.now().minusDays(3);
         List<HistoryDTO> chatHistoryDetailsEmail = redisChatHistoryRepository.getChatHistoryDetailsEmail(email);
         Pageable pageable = PageRequest.of(page, size);
         Page<HistoryDTO> recentMessagesFromRedis = convertListToPage(chatHistoryDetailsEmail, pageable);
@@ -62,20 +59,10 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
         return new PageImpl<>(finalMessages, pageable, totalElements);
     }
 
-    @Transactional
     public void storeNewMessageInRedis(String email, History newMessage) {
-        // Validate that the message has necessary fields (you can add more validation based on your needs)
-        if (newMessage == null || email == null || email.isEmpty()) {
-            throw new IllegalArgumentException("Invalid email or message");
-        }
-
-        // Set the current date and time if it's not already set
-        if (newMessage.getDateTime() == null) {
-            newMessage.setDateTime(LocalDateTime.now());
-        }
         // Save the new message in Redis
         redisChatHistoryRepository.saveChatHistoryDetails(email,newMessage);
-         //moveOldMessagesToDb(email);
+         // async call moveOldMessagesToDb(email);
     }
     @Transactional
     public void moveOldMessagesToDb(String email) {
@@ -90,7 +77,6 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
                     })
                     .filter(message -> message.getDateTime().isBefore(fiveMinutesBefore))
                     .collect(Collectors.toList());
-
             // Save 3 days older messages to the Database
             if (!messagesToMoveToDb.isEmpty()) {
                 chatHistoryRepository.saveAll(messagesToMoveToDb);
