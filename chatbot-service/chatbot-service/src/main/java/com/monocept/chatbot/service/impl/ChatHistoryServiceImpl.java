@@ -1,4 +1,4 @@
-package com.monocept.chatbot.service.impl;
+/*package com.monocept.chatbot.service.impl;
 
 import com.monocept.chatbot.exceptions.ResourcesNotFoundException;
 import com.monocept.chatbot.model.dto.HistoryDTO;
@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Service
@@ -34,7 +35,8 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
         logger.info("Fetching messages for email: {}", email);
         try {
         // Calculate the dateTime 90 days ago from the current date
-        LocalDateTime dateTime90DaysAgo = LocalDateTime.now().minus(90, ChronoUnit.DAYS);
+       // LocalDateTime dateTime90DaysAgo = LocalDateTime.now().minus(90, ChronoUnit.DAYS);
+            ZonedDateTime dateTime90DaysAgo = ZonedDateTime.now().minus(90, ChronoUnit.DAYS);
         // Create a Pageable object for pagination
         Pageable pageable = PageRequest.of(page, size);
 
@@ -51,4 +53,4 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
         }
 
     }
-}
+}*/

@@ -1,5 +1,5 @@
-package com.monocept.chatbot.service;
-
-public interface SendMessageService {
-    void send(String message);
-}
+//package com.monocept.chatbot.service;
+//
+//public interface SendMessageService {
+//    void send(String message);
+//}

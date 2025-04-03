@@ -1,4 +1,4 @@
-package com.monocept.chatbot.service.impl;
+/*package com.monocept.chatbot.service.impl;
 
 import com.monocept.chatbot.reposiotry.ChatHistoryRepository;
 import com.monocept.chatbot.service.ChatHistoryDataPurge;
@@ -39,5 +39,5 @@ public class ChatHistoryDataPurgeImp  implements ChatHistoryDataPurge {
         }
 
     }
-
+*/
 

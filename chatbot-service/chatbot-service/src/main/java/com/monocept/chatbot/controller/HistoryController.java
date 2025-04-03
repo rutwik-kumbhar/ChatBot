@@ -1,10 +1,8 @@
-package com.monocept.chatbot.controller;
+/*package com.monocept.chatbot.controller;
 
 import com.monocept.chatbot.model.dto.HistoryDTO;
 import com.monocept.chatbot.model.request.MessageRequest;
 import com.monocept.chatbot.model.response.MasterResponse;
-import com.monocept.chatbot.service.ChatHistoryDataPurge;
-import com.monocept.chatbot.service.ChatHistoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,13 +16,13 @@ import javax.validation.Valid;
 @RequestMapping("/api/v1/chatbot")
 public class HistoryController {
     private static final Logger logger = LoggerFactory.getLogger(HistoryController.class);
-    private final ChatHistoryService chatHistoryService;
-    private final ChatHistoryDataPurge chatHistoryDataPurge;
+   // private final ChatHistoryService chatHistoryService;
+   // private final ChatHistoryDataPurge chatHistoryDataPurge;
 
-    public HistoryController(ChatHistoryService chatHistoryService, ChatHistoryDataPurge chatHistoryDataPurge) {
-        this.chatHistoryService = chatHistoryService;
-        this.chatHistoryDataPurge = chatHistoryDataPurge;
-    }
+  //  public HistoryController(ChatHistoryService chatHistoryService, ChatHistoryDataPurge chatHistoryDataPurge) {
+    //    this.chatHistoryService = chatHistoryService;
+      //  this.chatHistoryDataPurge = chatHistoryDataPurge;
+    //}
 
     @PostMapping("/history/chat")
     public ResponseEntity<MasterResponse<Page<HistoryDTO>>> getMessagesFromLast90Days(@Valid @RequestBody MessageRequest messageRequest) {
@@ -55,3 +53,4 @@ public class HistoryController {
         return "Data cleanup triggered.";
     }
 }
+*/
