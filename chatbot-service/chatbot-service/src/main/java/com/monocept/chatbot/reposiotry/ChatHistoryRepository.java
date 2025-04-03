@@ -1,6 +1,6 @@
 package com.monocept.chatbot.reposiotry;
 import com.monocept.chatbot.model.dto.HistoryDTO;
-import com.monocept.chatbot.Entity.History;
+import com.monocept.chatbot.entity.History;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
