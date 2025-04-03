@@ -27,7 +27,9 @@ public class User {
     private String agentId;
 
     @Column(length =  100, nullable = false)
-    private String name;
+    private String firstName;
+
+    private String lastName;
 
     @Column(length = 30 , nullable = false, unique = true )
     private String email;
