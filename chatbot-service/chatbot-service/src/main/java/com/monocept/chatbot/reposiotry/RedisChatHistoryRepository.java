@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -43,7 +44,7 @@ public class RedisChatHistoryRepository {
     }
 
     // Get recent chat history details from Redis for a specific email
-    public List<HistoryDTO> getChatHistoryDetailsEmail(String email) {
+  /*  public List<HistoryDTO> getChatHistoryDetailsEmail(String email) {
         String key = email + "_chatHistoryDetails";
         // Retrieve the chat history list from the hash
         List<Object> rawData = redisTemplate.opsForHash().values(HASH_KEY);
@@ -53,7 +54,72 @@ public class RedisChatHistoryRepository {
                 .filter(HistoryDTO.class::isInstance)
                 .map(HistoryDTO.class::cast)
                 .collect(Collectors.toList());
+    }*/
+    /*public List<HistoryDTO> getChatHistoryDetailsEmail(String email) {
+        String key = email + "_chatHistoryDetails";
+        try {
+            // Log the start of the operation
+            logger.info("Fetching chat history details for email: {}", email);
+            // Retrieve the chat history list from the hash
+            List<Object> rawData = redisTemplate.opsForHash().values(HASH_KEY);
+            // Log the retrieved data size (optional)
+            logger.debug("Retrieved {} raw data entries for email: {}", rawData.size(), email);
+            // Filter and convert to the expected type (HistoryDTO)
+            List<HistoryDTO> chatHistoryDetails = rawData.stream()
+                    .filter(HistoryDTO.class::isInstance)
+                    .map(HistoryDTO.class::cast)
+                    .collect(Collectors.toList());
+            // Log the number of successfully converted HistoryDTO objects
+            logger.debug("Successfully converted {} entries to HistoryDTO for email: {}", chatHistoryDetails.size(), email);
+            // Log the successful completion of the operation
+            logger.info("Chat history details fetched successfully for email: {}", email);
+            return chatHistoryDetails;
+        } catch (Exception e) {
+            // Log the error with the exception details
+            logger.error("Error occurred while fetching chat history details for email: {}", email, e);
+            return Collections.emptyList();
+        }
+    }*/
+    public List<HistoryDTO> getChatHistoryDetailsEmail(String email) {
+        String key = email + "_chatHistoryDetails";
+        try {
+            // Log the start of the operation
+            logger.info("Fetching chat history details for email: {}", email);
+
+            // Retrieve the chat history list from the hash
+            List<Object> rawData = redisTemplate.opsForHash().values(HASH_KEY);
+
+            // Log the retrieved data size (optional)
+            logger.debug("Retrieved {} raw data entries for email: {}", rawData.size(), email);
+
+            // Filter and convert to the expected type (HistoryDTO)
+            List<HistoryDTO> chatHistoryDetails = rawData.stream()
+                    .filter(HistoryDTO.class::isInstance)
+                    .map(HistoryDTO.class::cast)
+                    .collect(Collectors.toList());
+
+            // Log the number of successfully converted HistoryDTO objects
+            logger.debug("Successfully converted {} entries to HistoryDTO for email: {}", chatHistoryDetails.size(), email);
+
+            // Log the chat history details (with a size limit to avoid excessive logging)
+            if (chatHistoryDetails.size() > 0) {
+                logger.debug("Chat history details for email {}: {}", email, chatHistoryDetails.subList(0, Math.min(5, chatHistoryDetails.size())));  // Logs up to 5 entries for brevity
+            } else {
+                logger.debug("No chat history details found for email: {}", email);
+            }
+
+            // Log the successful completion of the operation
+            logger.info("Chat history details fetched successfully for email: {}", email);
+            return chatHistoryDetails;
+        } catch (Exception e) {
+            // Log the error with the exception details
+            logger.error("Error occurred while fetching chat history details for email: {}", email, e);
+            return Collections.emptyList();
+        }
     }
+
+
+
 
     // Delete chat history from Redis for a specific email (if needed)
     public void deleteChatHistoryDetails(String email) {

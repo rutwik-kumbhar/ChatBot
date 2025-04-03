@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 @Validated
 @RestController
-@RequestMapping("/api/v1/chatbot")
+@RequestMapping("/api/chatbot")
 public class HistoryController {
     private static final Logger logger = LoggerFactory.getLogger(HistoryController.class);
     private final ChatHistoryService chatHistoryService;
@@ -27,7 +27,7 @@ public class HistoryController {
         this.chatHistoryDataPurge = chatHistoryDataPurge;
     }
 
-    @PostMapping("/historychat")
+    @PostMapping("/chathistory")
     public ResponseEntity<MasterResponse<Page<HistoryDTO>>> getMessagesFromLast90Days(@Valid @RequestBody MessageRequest messageRequest) {
         try {
             logger.info("Received request to fetch messages for Email: {}", messageRequest.getEmail());

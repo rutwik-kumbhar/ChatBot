@@ -1,6 +1,6 @@
 # For the postgres
 server:
-  port: 8080
+  port: 3456
 spring:
   config:
     activate:
@@ -20,12 +20,10 @@ logging:
     root: INFO
 
 mli:
+
   message:
     send:
       url: http://localhost:8081/api/v1/message/send
 
-  spring:
-    redis:
-      host: localhost
-      port: 6379
+
 
