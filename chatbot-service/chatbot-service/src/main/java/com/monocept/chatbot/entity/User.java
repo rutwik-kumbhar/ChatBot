@@ -32,7 +32,7 @@ public class User {
     private String lastName;
 
     @Column(length = 30 , nullable = false, unique = true )
-    private String emailId;
+    private String email;
 
     @Column(length = 20, nullable = false)
     private String role;

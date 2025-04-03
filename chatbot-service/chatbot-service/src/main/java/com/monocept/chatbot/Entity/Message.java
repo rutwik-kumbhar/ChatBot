@@ -1,21 +1,16 @@
 package com.monocept.chatbot.entity;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.monocept.chatbot.model.dto.MediaDto;
-
-import com.vladmihalcea.hibernate.type.json.JsonType;
+import com.monocept.chatbot.utils.MediaDtoConverter;
 import jakarta.persistence.*;
-import lombok.Data;
-import org.hibernate.annotations.Type;
-
 
 import java.time.ZonedDateTime;
 
 @Entity
-@Data
 public class Message {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name =  "message_seq", sequenceName = "message_seq", initialValue = 1 , allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE , generator = "message_seq")
     private Long id;
     private String emailId;
     private String platform;
@@ -28,10 +23,9 @@ public class Message {
     private String status;
     private String emoji;
     private String action;
-//    @Type(JsonType.class) // Use Hibernate JSON Type
-    @JsonSubTypes.Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
-    private MediaDto media;
+    @Convert(converter = MediaDtoConverter.class)
+    private MediaDto media;  
     private Boolean botOption;
     private String options;
     private ZonedDateTime createdAt;
