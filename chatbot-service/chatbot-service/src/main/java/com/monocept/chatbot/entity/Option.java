@@ -15,6 +15,10 @@ public class Option {
     @GeneratedValue(strategy = GenerationType.SEQUENCE , generator = "option_seq")
     private long id;
 
+
+    @Column(unique = true , length = 200)
     private String name;
+
+    @Column(length = 100)
     private String icon;
 }

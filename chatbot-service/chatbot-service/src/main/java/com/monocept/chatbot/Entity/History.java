@@ -1,4 +1,4 @@
-package com.monocept.chatbot.Entity;
+package com.monocept.chatbot.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
