@@ -39,11 +39,10 @@ public class ChatBotController {
       //  this.chatHistoryService = chatHistoryService;
    // }
 
-//    @PostMapping("/webhook")
-//    public ResponseEntity<String> receiveWebhook(@RequestBody Object message) throws JsonProcessingException {
-//         receivedMessageSocketService.receive(message);
-//         return  new ResponseEntity<>("Message Send to Webhook Successfully", HttpStatus.OK);
-//    }
+  // @PostMapping("/webhook") public ResponseEntity<String> receiveWebhook(@RequestBody Object message) throws JsonProcessingException {
+    //   receivedMessageSocketService.receive(message);
+      // return  new ResponseEntity<>("Message Send to Webhook Successfully", HttpStatus.OK);
+   //}
 
   /*  @PostMapping ("/messages")
     public ResponseEntity<MasterResponse<Page<HistoryDTO>>> getMessagesFromLast90Days(@RequestBody MessageRequest messageRequest) {
