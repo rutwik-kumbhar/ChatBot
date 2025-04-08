@@ -3,6 +3,7 @@ package com.monocept.chatbot.Entity;
 
 import com.monocept.chatbot.enums.*;
 import com.monocept.chatbot.model.dto.MediaDto;
+import com.monocept.chatbot.utils.MediaDtoConverter;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
