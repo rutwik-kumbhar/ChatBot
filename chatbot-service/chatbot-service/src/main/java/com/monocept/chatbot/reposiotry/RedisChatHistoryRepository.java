@@ -1,7 +1,7 @@
 package com.monocept.chatbot.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.monocept.chatbot.Entity.History;
-import com.monocept.chatbot.model.dto.HistoryDTO;
+import com.monocept.chatbot.Entity.Message;
+import com.monocept.chatbot.model.dto.MessageDto;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +27,12 @@ public class RedisChatHistoryRepository {
     }
 
     // Save recent chat history details into Redis
-    public void saveChatHistoryDetails(String email, History chatHistoryDetails) {
+    public void saveChatHistoryDetails(String email, Message chatHistoryDetails) {
         logger.info("Saving chat history details in Redis for email: {}", email);
         try {
             String key = email + "_chatHistoryDetails";
             // Convert History object to HistoryDTO (or other relevant object) before saving
-            HistoryDTO chatHistoryDTO = convertToDTO(chatHistoryDetails);
+            MessageDto chatHistoryDTO = convertToDTO(chatHistoryDetails);
             redisTemplate.opsForHash().put(HASH_KEY, key, chatHistoryDTO);
             redisTemplate.expire(key, 2, TimeUnit.MINUTES);  // Cache for 3 Days
         } catch (Exception ex) {
@@ -40,15 +40,24 @@ public class RedisChatHistoryRepository {
         }
     }
     // Convert History entity to DTO
-    private HistoryDTO convertToDTO(History chatHistoryDetails) {
+  /*  private MessageDto convertToDTO(MessageDto chatHistoryDetails) {
         //  this can be customized as per your logic
-        return new HistoryDTO(chatHistoryDetails.getMsgId(), chatHistoryDetails.getMsg(),
-              chatHistoryDetails.getMessageTo(), chatHistoryDetails.getDateTime(), chatHistoryDetails.getReplyId(),chatHistoryDetails.getType(),chatHistoryDetails.getMediaUrl(),chatHistoryDetails.getActivity());
+        return new MessageDto(chatHistoryDetails.getId(),chatHistoryDetails.getUserId(),chatHistoryDetails.getEmail(),chatHistoryDetails.getSendType(),chatHistoryDetails.getMessageType(),chatHistoryDetails.getMessageId(),chatHistoryDetails.getMessageTo(),chatHistoryDetails.getText(),chatHistoryDetails.getReplyToMessageId(),chatHistoryDetails.getStatus(),chatHistoryDetails.getEmoji(),chatHistoryDetails.getAction(),chatHistoryDetails.getAction(),
+                chatHistoryDetails.getMedia(),chatHistoryDetails.getBotOptions(),chatHistoryDetails.getBotOptions(),chatHistoryDetails.getPlatform(),chatHistoryDetails.getCreatedAt());
+       // return new HistoryDTO(chatHistoryDetails.getMsgId(), chatHistoryDetails.getMsg(),
+         //     chatHistoryDetails.getMessageTo(), chatHistoryDetails.getDateTime(), chatHistoryDetails.getReplyId(),chatHistoryDetails.getType(),chatHistoryDetails.getMediaUrl(),chatHistoryDetails.getActivity());
+    }*/
+    private MessageDto convertToDTO(Message chatHistoryDetails) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        // Use ObjectMapper to map Message to MessageDto
+        return objectMapper.convertValue(chatHistoryDetails, MessageDto.class);
     }
+
+
     // Get recent chat history details from Redis for a specific email
-    public List<HistoryDTO> getChatHistoryDetailsEmail(String email) {
+    public List<MessageDto> getChatHistoryDetailsEmail(String email) {
         String key = email + "_chatHistoryDetails";
-        List<HistoryDTO> histroy=new ArrayList<>();
+        List<MessageDto> histroy=new ArrayList<>();
         try {
             logger.info("Fetching chat history details from Redis for email: {}", email);
             // Retrieve the specific chat history for the given email (key)
@@ -57,8 +66,8 @@ public class RedisChatHistoryRepository {
             if (chatHistoryRaw != null) {
                 logger.info("Retrieved chat history for email: {}", chatHistoryRaw);
                 ModelMapper modelMapper = new ModelMapper();
-                HistoryDTO historyDTO = modelMapper.map(chatHistoryRaw, HistoryDTO.class);
-                histroy.add(historyDTO);
+                MessageDto messageDto = modelMapper.map(chatHistoryRaw, MessageDto.class);
+                histroy.add(messageDto);
             }
         } catch (Exception e) {
             // Log the error with the exception details

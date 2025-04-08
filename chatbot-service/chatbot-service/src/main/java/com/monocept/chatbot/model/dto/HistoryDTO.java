@@ -1,4 +1,4 @@
-package com.monocept.chatbot.model.dto;
+/*package com.monocept.chatbot.model.dto;
 
 import lombok.*;
 
@@ -23,3 +23,5 @@ public class HistoryDTO implements Serializable {
 
 
 }
+
+ */

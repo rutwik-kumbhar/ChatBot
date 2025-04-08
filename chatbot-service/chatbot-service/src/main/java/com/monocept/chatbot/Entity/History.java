@@ -1,4 +1,4 @@
-package com.monocept.chatbot.Entity;
+/*package com.monocept.chatbot.Entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,3 +50,4 @@ public class History {
 
 }
 
+*/

@@ -1,23 +1,23 @@
 package com.monocept.chatbot.Entity;
-
-
 import com.monocept.chatbot.enums.*;
 import com.monocept.chatbot.model.dto.MediaDto;
 import com.monocept.chatbot.utils.MediaDtoConverter;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-
+import lombok.NoArgsConstructor;
 import java.time.ZonedDateTime;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "message")
 public class Message {
     @Id
-    @SequenceGenerator(name =  "message_seq", sequenceName = "message_seq", initialValue = 1 , allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE , generator = "message_seq")
+    //@SequenceGenerator(name =  "message_seq", sequenceName = "message_seq", initialValue = 1 , allocationSize = 1)
+    //@GeneratedValue(strategy = GenerationType.SEQUENCE , generator = "message_seq")
     private Long id;
 
     @Column(length = 20)
@@ -58,7 +58,6 @@ public class Message {
     @Column(columnDefinition = "jsonb")
     @Convert(converter = MediaDtoConverter.class)
     private MediaDto media;
-
 
     @Column(columnDefinition = "jsonb")
     private List<String> botOptions;

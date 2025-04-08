@@ -9,6 +9,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 @Service
 public class ChatHistoryDataPurgeImp  implements ChatHistoryDataPurge {
 
@@ -26,7 +29,10 @@ public class ChatHistoryDataPurgeImp  implements ChatHistoryDataPurge {
     //Scheduled to run every day at midnight (adjust as necessary)
     @Scheduled(cron = "0 54 17 * * ?")
     public void deleteHistoryData90Days(){
-            LocalDateTime date90DaysAgo = LocalDateTime.now().minusDays(90);
+            //LocalDateTime date90DaysAgo = LocalDateTime.now().minusDays(90);
+        ZonedDateTime date90DaysAgo = LocalDateTime.now()
+                .minusDays(90)
+                .atZone(ZoneId.systemDefault());
         try {
             logger.info("Data purge scheduled. Deleting records older than 90 days. Date threshold: {}", date90DaysAgo);
 

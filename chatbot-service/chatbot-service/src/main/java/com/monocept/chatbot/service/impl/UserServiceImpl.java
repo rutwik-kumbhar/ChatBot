@@ -27,14 +27,14 @@ public class UserServiceImpl implements UserService {
     private  final  UserRepository userRepository;
     private final  UserMapper userMapper;
     private final OptionService optionService;
-    private final PlaceHolderServiceImpl placeHolderService;
+   // private final PlaceHolderServiceImpl placeHolderService;
 
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, OptionService optionService, PlaceHolderServiceImpl placeHolderService) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, OptionService optionService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.optionService = optionService;
-        this.placeHolderService = placeHolderService;
+     //   this.placeHolderService = placeHolderService;
     }
 
     @Override
@@ -51,14 +51,14 @@ public class UserServiceImpl implements UserService {
 
         UserInfo userInfo = userMapper.mapToUserInfo(user);
         List<String> options = optionService.getAllOptions();
-        List<String> placeholders = placeHolderService.getAllPlaceholders();
+       // List<String> placeholders = placeHolderService.getAllPlaceholders();
 
-        log.info("getUserConfiguration : place holders : {} ", placeholders);
+       // log.info("getUserConfiguration : place holders : {} ", placeholders);
 
         return UserConfigResponse.builder()
                 .user(userInfo)
                 .options(options)
-                .placeHolders(placeholders)
+               // .placeHolders(placeholders)
                 .botName("Ely") // Need to fetch later from db
                 .statusFlag(user.getStatusFlag())
                 .dateTime(ZonedDateTime.now()).build();

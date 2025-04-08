@@ -1,7 +1,6 @@
 package com.monocept.chatbot.controller;
 
-import com.monocept.chatbot.Entity.History;
-import com.monocept.chatbot.model.dto.HistoryDTO;
+import com.monocept.chatbot.model.dto.MessageDto;
 import com.monocept.chatbot.model.request.MessageRequest;
 import com.monocept.chatbot.model.response.MasterResponse;
 import com.monocept.chatbot.service.ChatHistoryDataPurge;
@@ -28,13 +27,13 @@ public class HistoryController {
     }
 
     @PostMapping("/chathistory")
-    public ResponseEntity<MasterResponse<Page<HistoryDTO>>> getMessagesFromLast90Days(@Valid @RequestBody MessageRequest messageRequest) {
+    public ResponseEntity<MasterResponse<Page<MessageDto>>> getMessagesFromLast90Days(@Valid @RequestBody MessageRequest messageRequest) {
         try {
             logger.info("Received request to fetch messages for Email: {}", messageRequest.getEmail());
             String email = messageRequest.getEmail();
             // Call to service layer to get messages from the last 90 days
-            Page<HistoryDTO> messages = chatHistoryService.getMessagesFromLast90Days(email,messageRequest.page,messageRequest.size);
-            MasterResponse<Page<HistoryDTO>> response;
+            Page<MessageDto> messages = chatHistoryService.getMessagesFromLast90Days(email,messageRequest.page,messageRequest.size);
+            MasterResponse<Page<MessageDto>> response;
             if (messages != null && !messages.isEmpty()) {
                 // Success case, messages found
                 response = new MasterResponse<>("success",HttpStatus.OK.value(),"Messages retrieved successfully.", messages);
@@ -45,7 +44,7 @@ public class HistoryController {
             }
         } catch (Exception ex) {
             logger.error("Error occurred while fetching messages: {}", ex.getMessage(), ex);
-            MasterResponse<Page<HistoryDTO>> errorResponse = new MasterResponse<>("error", HttpStatus.INTERNAL_SERVER_ERROR.value(),"An unexpected error occurred.", null);
+            MasterResponse<Page<MessageDto>> errorResponse = new MasterResponse<>("error", HttpStatus.INTERNAL_SERVER_ERROR.value(),"An unexpected error occurred.", null);
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

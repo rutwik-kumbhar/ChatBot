@@ -1,6 +1,5 @@
 package com.monocept.chatbot.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.monocept.chatbot.model.dto.HistoryDTO;
 import com.monocept.chatbot.model.request.MessageRequest;
 import com.monocept.chatbot.model.response.MasterResponse;
 import com.monocept.chatbot.service.ChatHistoryDataPurge;

@@ -1,4 +1,4 @@
-package com.monocept.chatbot.service.impl;
+/*package com.monocept.chatbot.service.impl;
 
 import com.monocept.chatbot.reposiotry.PlaceholderRepository;
 import com.monocept.chatbot.service.PlaceholderService;
@@ -21,3 +21,4 @@ public class PlaceHolderServiceImpl implements PlaceholderService {
         return  placeholderRepository.findActivePlaceholderNames();
     }
 }
+*/
