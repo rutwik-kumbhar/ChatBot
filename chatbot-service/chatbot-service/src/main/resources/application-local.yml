@@ -1,14 +1,14 @@
 # For the postgres
 server:
-  port: 8080
+  port: 9092
 spring:
   config:
     activate:
       on-profile: local
   datasource:
-    url: jdbc:postgresql://localhost:5432/chat_history_db
+    url: jdbc:postgresql://localhost:5432/chatbot
     username: postgres
-    password: postgres
+    password: root
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -30,7 +30,7 @@ payload:
 
 redis:
   host: localhost
-  port: 6000
+  port: 6379
 
 mli:
   message:

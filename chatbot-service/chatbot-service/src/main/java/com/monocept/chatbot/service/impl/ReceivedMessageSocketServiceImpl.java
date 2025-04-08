@@ -1,9 +1,10 @@
-/*package com.monocept.chatbot.service.impl;
+package com.monocept.chatbot.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.monocept.chatbot.component.WebSocketHandler;
 
+import com.monocept.chatbot.service.ReceivedMessageSocketService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,4 +24,3 @@ public class ReceivedMessageSocketServiceImpl implements ReceivedMessageSocketSe
          webSocketHandler.broadcast(jsonMessage);
     }
 }
-*/

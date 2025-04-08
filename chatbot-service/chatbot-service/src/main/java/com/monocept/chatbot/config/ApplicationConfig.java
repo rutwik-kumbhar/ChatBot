@@ -24,7 +24,6 @@ public class ApplicationConfig {
 
     @Bean
     public ObjectMapper objectMapper() {
-        log.info("bean created");
         ObjectMapper objectMapper = new ObjectMapper();
 
         // Ignore unknown properties during deserialization

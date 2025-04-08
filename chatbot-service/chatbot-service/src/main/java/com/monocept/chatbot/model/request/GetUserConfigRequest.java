@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class GetUserConfigRequest {
-    private String email;
-    private String userId;
+    private String agentId;
 }
