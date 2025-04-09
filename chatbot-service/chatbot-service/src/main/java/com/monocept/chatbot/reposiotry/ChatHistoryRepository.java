@@ -19,7 +19,6 @@ public interface ChatHistoryRepository extends JpaRepository<Message, Long> {
 
  //  @Query("SELECT new com.monocept.chatbot.model.dto.HistoryDTO(c.msgId, c.msg, c.messageTo, c.dateTime, c.replyId, c.type, c.mediaUrl, c.activity) FROM History c WHERE c.dateTime >= :dateTime AND c.email = :email  group by dateTime,msgId" )
    // Page<HistoryDTO> findMessagesFromDayswrtEmail(@Param("dateTime") LocalDateTime dateTime, @Param("email") String email, Pageable pageable );
-
     @Query("SELECT new com.monocept.chatbot.model.dto.MessageDto(" +
             "c.id, " +
             "c.userId, " +
@@ -34,14 +33,13 @@ public interface ChatHistoryRepository extends JpaRepository<Message, Long> {
             "c.emoji, " +
             "c.action, " +
             "c.media, " +
+            "c.options, " +
             "c.botOptions, " +
-            "c.option, " +
             "c.platform, " +
             "c.createdAt) " +
-            "FROM Message c WHERE c.createdAt >= :createdAt AND c.email = :email " +
+            "FROM Message c WHERE c.createdAt > :createdAt AND c.email = :email " +
             "ORDER BY c.createdAt DESC")
     Page<MessageDto> findMessagesFromDayswrtEmail(@Param("createdAt") ZonedDateTime createdAt, @Param("email") String email, Pageable pageable);
-
 
     //  void deleteByDateTimeBefore(LocalDateTime dateTime);
   @Modifying

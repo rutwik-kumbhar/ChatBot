@@ -13,7 +13,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -37,71 +36,76 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
     }
 
     @Override
-    @Transactional
+
     public Page<MessageDto> getMessagesFromLast90Days(String email, int page, int size) {
         Message message = new Message();
-        message.setId(1L);
-        message.setUserId("user123");
-        message.setEmail("user123@example.com");
-        message.setSendType(MessageSendType.MESSAGE); // Assume the enum contains types like TEXT, IMAGE, etc.
-        message.setMessageType(MessageType.TEXT); // Assume enum contains types like TEXT, IMAGE, etc.
+        message.setId(5L);
+        message.setUserId("user5");
+        message.setEmail("user5@example.com");
+        message.setSendType(MessageSendType.MESSAGE);
+        message.setMessageType(MessageType.TEXT);
         message.setMessageId("msg-001");
-        message.setMessageTo(MessageTo.BOT); // Assume this is a predefined enum like USER, BOT, etc.
-        message.setText("Hello, this is a test message.");
-        message.setReplyToMessageId("msg-000"); // Assuming it's a valid previous message ID
-        message.setStatus(MessageStatus.READ); // Sent, Pending, etc. based on your enum
-        message.setEmoji("\uD83D\uDE0A"); // Emojis as string
-        message.setAction(Action.SELECTED); // Assume Action enum contains REPLY, FORWARD, etc.
-        message.setMedia(new MediaDto()); // MediaDto instance, adjust based on your actual class structure
-
-// Sample list of bot options (assuming it's for choices or buttons)
-        message.setBotOptions(List.of("Option 1", "Option 2", "Option 3"));
-        message.setOption(true); // A boolean flag indicating if options are enabled
-        message.setPlatform("web"); // Platform like 'web', 'mobile', etc.
-        message.setCreatedAt(ZonedDateTime.now()); // Date and time of creation
-        message.setUpdatedAt(ZonedDateTime.now()); // Date and time of last update
-
-
+        message.setMessageTo(MessageTo.USER);
+        message.setText("Hello,how are you.");
+        message.setReplyToMessageId("msg-0001");
+        message.setStatus(MessageStatus.READ);
+        message.setEmoji("\uD83D\uDE0A");
+        message.setAction(Action.SELECTED);
+        message.setMedia(new MediaDto());
+        message.setOptions(List.of("Option 1", "Option 2", "Option 3"));
+        message.setBotOptions(true);
+        message.setPlatform("mspace");
+        message.setCreatedAt(ZonedDateTime.now());
+        message.setUpdatedAt(ZonedDateTime.now());
         storeNewMessageInRedis(email, message);
 
-
-
-        // Combining Redis and Database logic in one method
         Pageable pageable = PageRequest.of(page, size);
         List<MessageDto> finalMessages = new ArrayList<>();
 
         // Fetch messages from Redis
-        List<MessageDto> recentMessagesFromRedis = redisChatHistoryRepository.getChatHistoryDetailsEmail(email);
-        Page<MessageDto> recentMessagesPage = convertListToPage(recentMessagesFromRedis, pageable);
+        try {
+            List<MessageDto> recentMessagesFromRedis = redisChatHistoryRepository.getChatHistoryDetailsEmail(email);
+            Page<MessageDto> recentMessagesPage = convertListToPage(recentMessagesFromRedis, pageable);
+            if (recentMessagesPage != null && !recentMessagesPage.isEmpty()) {
+                finalMessages.addAll(recentMessagesPage.getContent());
+                logger.info("Found {} recent messages from Redis for email: {}", finalMessages.size(), email);
 
-        if (!recentMessagesPage.isEmpty()) {
-            finalMessages.addAll(recentMessagesPage.getContent());
-            logger.info("Found {} recent messages from Redis", finalMessages.size());
+                // Fetch remaining messages from the database for the past 87 days
+                ZonedDateTime dateTime87DaysAgo = LocalDateTime.now()
+                        .minusDays(87)
+                        .atZone(ZoneId.systemDefault());
+                try {
+                    Page<MessageDto> messagesFromDb87Days = chatHistoryRepository.findMessagesFromDayswrtEmail(dateTime87DaysAgo, email, pageable);
+                    if (messagesFromDb87Days != null && !messagesFromDb87Days.isEmpty()) {
+                        finalMessages.addAll(messagesFromDb87Days.getContent());
+                        logger.info("Found {} messages from the database for the past 87 days for email: {}", messagesFromDb87Days.getContent().size(), email);
+                    }
+                } catch (Exception e) {
+                    logger.error("Error fetching messages from database for the past 87 days for email {}: {}", email, e.getMessage());
+                }
+            } else {
+                logger.info("No recent messages found in Redis, fetching from database for the last 90 days for email: {}", email);
 
-            // Fetch remaining messages from the database for the past 87 days
-           // LocalDateTime dateTime87DaysAgo = LocalDateTime.now().minusDays(87);
-            ZonedDateTime dateTime87DaysAgo = LocalDateTime.now()
-                    .minusDays(87)
-                    .atZone(ZoneId.systemDefault());
-            Page<MessageDto> messagesFromDb87Days = chatHistoryRepository.findMessagesFromDayswrtEmail(dateTime87DaysAgo, email, pageable);
-            if (!messagesFromDb87Days.isEmpty()) {
-                finalMessages.addAll(messagesFromDb87Days.getContent());
-                logger.info("Found {} messages from the database for the past 87 days", messagesFromDb87Days.getContent().size());
+                ZonedDateTime dateTime90DaysAgo = LocalDateTime.now()
+                        .minusDays(90)
+                        .atZone(ZoneId.systemDefault());
+                try {
+                    Page<MessageDto> messagesFromDb90Days = chatHistoryRepository.findMessagesFromDayswrtEmail(dateTime90DaysAgo, email, pageable);
+                    if (messagesFromDb90Days != null && !messagesFromDb90Days.isEmpty()) {
+                        finalMessages.addAll(messagesFromDb90Days.getContent());
+                        logger.info("Found {} messages from the database for the past 90 days for email: {}", messagesFromDb90Days.getContent().size(), email);
+                    } else {
+                        logger.error("No messages found in the database for email: {} in the last 90 days", email);
+                        throw new ResourcesNotFoundException("No messages found for the provided email in the last 90 days.");
+                    }
+                } catch (Exception e) {
+                    logger.error("Error fetching messages from database for the last 90 days for email {}: {}", email, e.getMessage());
+                    throw new ResourcesNotFoundException("Error fetching messages from database for the provided email in the last 90 days.");
+                }
             }
-        } else {
-            logger.info("No recent messages found in Redis, fetching from database for the last 90 days.");
-          //  LocalDateTime dateTime90DaysAgo = LocalDateTime.now().minusDays(90);
-            ZonedDateTime dateTime90DaysAgo = LocalDateTime.now()
-                    .minusDays(90)
-                    .atZone(ZoneId.systemDefault());
-            Page<MessageDto> messagesFromDb90Days = chatHistoryRepository.findMessagesFromDayswrtEmail(dateTime90DaysAgo, email, pageable);
-
-            if (messagesFromDb90Days.isEmpty()) {
-                logger.error("No messages found for email: {} in the last 90 days", email);
-                throw new ResourcesNotFoundException("No messages found for the provided email in the last 90 days.");
-            }
-            finalMessages.addAll(messagesFromDb90Days.getContent());
-            logger.info("Found {} messages from the database for the past 90 days", messagesFromDb90Days.getContent().size());
+        } catch (Exception e) {
+            logger.error("Error retrieving messages for email {}: {}", email, e.getMessage());
+            throw new ResourcesNotFoundException("An error occurred while retrieving messages for the provided email.");
         }
 
         // Handle empty result
@@ -110,36 +114,47 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
             throw new ResourcesNotFoundException("No messages found for the provided email in the last 90 days.");
         }
 
-
         return new PageImpl<>(finalMessages, pageable, finalMessages.size());
     }
 
     public void storeNewMessageInRedis(String email, Message message) {
         // Store the new message both in Redis and DB
-        logger.info("Storing new message in Redis and DB for email: {}", email);
-        redisChatHistoryRepository.saveChatHistoryDetails(email, message);
-       // chatHistoryRepository.save(message);
+        try {
+            logger.info("Storing new message in Redis and DB for email: {}", email);
+            redisChatHistoryRepository.saveChatHistoryDetails(email, message);
 
-        // Asynchronously move the message to DB if needed
-        moveMessageToDbAsync(message);
+            // Asynchronously move the message to DB if needed
+           // moveMessageToDbAsync(message);
+        } catch (Exception e) {
+            logger.error("Error storing message in Redis for email {}: {}", email, e.getMessage());
+            throw new RuntimeException("Error storing new message in Redis.");
+        }
     }
 
-    @Async
+  /*  @Async
     @Transactional
     public void moveMessageToDbAsync(Message message) {
-        logger.info("Asynchronously saving message to DB: {}", message);
-        chatHistoryRepository.save(message);
-    }
-
-    // convert List to Page
-    public Page<MessageDto> convertListToPage(List<MessageDto> list, Pageable pageable) {
-        int start = Math.min((int) pageable.getOffset(), list.size());
-        int end = Math.min((start + pageable.getPageSize()), list.size());
-
-        if (start >= end) {
-            return new PageImpl<>(new ArrayList<>(), pageable, list.size());
+        try {
+            logger.info("Asynchronously saving message to DB: {}", message);
+            chatHistoryRepository.save(message);
+        } catch (Exception e) {
+            logger.error("Error saving message asynchronously to DB: {}", e.getMessage());
         }
-        List<MessageDto> sublist = list.subList(start, end);
-        return new PageImpl<>(sublist, pageable, list.size());
+    }*/
+
+    // Convert List to Page
+    public Page<MessageDto> convertListToPage(List<MessageDto> list, Pageable pageable) {
+        try {
+            int start = Math.min((int) pageable.getOffset(), list.size());
+            int end = Math.min((start + pageable.getPageSize()), list.size());
+            if (start >= end) {
+                return new PageImpl<>(new ArrayList<>(), pageable, list.size());
+            }
+            List<MessageDto> sublist = list.subList(start, end);
+            return new PageImpl<>(sublist, pageable, list.size());
+        } catch (Exception e) {
+            logger.error("Error converting list to page: {}", e.getMessage());
+            throw new RuntimeException("Error converting list to page.");
+        }
     }
 }

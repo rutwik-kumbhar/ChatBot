@@ -1,6 +1,6 @@
 # For the postgres
 server:
-  port: 7865
+  port: 9091
 spring:
   config:
     activate:
@@ -26,4 +26,7 @@ mli:
       url: http://localhost:8081/api/v1/message/send
 
 
+redis:
+    host: localhost
+    port: 6379
 

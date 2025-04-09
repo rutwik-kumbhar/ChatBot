@@ -16,8 +16,8 @@ import java.util.List;
 @Table(name = "message")
 public class Message {
     @Id
-    //@SequenceGenerator(name =  "message_seq", sequenceName = "message_seq", initialValue = 1 , allocationSize = 1)
-    //@GeneratedValue(strategy = GenerationType.SEQUENCE , generator = "message_seq")
+    @SequenceGenerator(name =  "message_seq", sequenceName = "message_seq", initialValue = 1 , allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE , generator = "message_seq")
     private Long id;
 
     @Column(length = 20)
@@ -29,7 +29,6 @@ public class Message {
     @Enumerated(EnumType.STRING)
     private MessageSendType sendType;
 
-
     @Enumerated(EnumType.STRING)
     private MessageType messageType;
 
@@ -38,7 +37,6 @@ public class Message {
 
     @Enumerated(EnumType.STRING)
     private MessageTo messageTo;
-
 
     @Column(columnDefinition = "TEXT")
     private String text;
@@ -60,9 +58,9 @@ public class Message {
     private MediaDto media;
 
     @Column(columnDefinition = "jsonb")
-    private List<String> botOptions;
+    private List<String> options;
 
-    private boolean option;
+    private boolean botOptions;
 
     @Column(length =  10)
     private String platform;
