@@ -75,7 +75,7 @@ public class HistoryController {
     //}
 
 
-    @GetMapping("/chathistory")
+    @GetMapping("/chathistory1")
     public ResponseEntity<MasterResponse<Page<MessageDto>>> chatHistory(@Valid @RequestBody MessageRequest messageRequest) {
         try {
             logger.info("Received request to fetch messages for Email: {}", messageRequest.getEmail());

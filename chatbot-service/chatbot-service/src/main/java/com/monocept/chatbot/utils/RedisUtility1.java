@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.monocept.chatbot.Entity.Message;
 import com.monocept.chatbot.model.dto.MessageDto;
-import com.monocept.chatbot.repository.RedisChatHistoryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,86 +17,79 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-/**
-* Utility class to handle Redis operations for message caching.
-*/
 @Component
-public class RedisUtility {
-
-    private static final Logger logger = LoggerFactory.getLogger(RedisUtility.class);
+public class RedisUtility1 {
+    private static final Logger logger = LoggerFactory.getLogger(RedisUtility1.class);
 
     private final ObjectMapper objectMapper;
-    private final RedisTemplate<String, String> redisTemplate;
-    private final RedisChatHistoryRepository redisChatHistoryRepository;
+    private final RedisTemplate<String,String> redisTemplate;
+    private com.monocept.chatbot.repository.RedisChatHistoryRepository1 redisChatHistoryRepository = null;
 
-    public RedisUtility(ObjectMapper objectMapper,
-                        RedisTemplate<String, String> redisTemplate,
-                        RedisChatHistoryRepository redisChatHistoryRepository) {
+    public RedisUtility1(ObjectMapper objectMapper, RedisTemplate<String, String> redisTemplate, com.monocept.chatbot.repository.RedisChatHistoryRepository1 redisChatHistoryRepository) {
         this.objectMapper = objectMapper;
         this.redisTemplate = redisTemplate;
         this.redisChatHistoryRepository = redisChatHistoryRepository;
     }
 
-    /**
-     * Save chat messages to Redis using repository (e.g., hash/list based strategy).
-     */
-    public void saveDataForLast3DaysToRedis(List<Message> messages, String email) {
+    public  void saveDataForLast3DaysToRedis(List<Message> messages, String email) {
         try {
-            redisChatHistoryRepository.saveAll(email, messages);
+            redisChatHistoryRepository.saveAll(email,messages);
             logger.info("Cached {} messages in Redis for {}", messages.size(), email);
         } catch (Exception e) {
-            logger.error("Error caching messages in Redis for {}: {}", email, e.getMessage(), e);
+            logger.error("Error caching messages in Redis for {}: {}", email, e.getMessage());
         }
     }
-
-    /**
-     * Retrieves paginated chat history from Redis sorted set for a given user.
-     */
     public Page<MessageDto> getPaginatedMessagesFromRedis(String email, Pageable pageable) {
         String key = email + ":chatMessagesSorted";
-        long start = (long) pageable.getPageNumber() * pageable.getPageSize();
-        long end = start + pageable.getPageSize() - 1;
 
+        int page = pageable.getPageNumber();
+        int size = pageable.getPageSize();
+
+        long start = (long) page * size;
+        long end = start + size - 1;
+
+        // Get messages in reverse (newest first)
         Set<String> rawMessages = redisTemplate.opsForZSet().reverseRange(key, start, end);
+
         if (rawMessages == null || rawMessages.isEmpty()) {
             return Page.empty(pageable);
         }
 
         List<MessageDto> messages = rawMessages.stream()
-                .map(this::safeDeserialize)
-                .filter(dto -> dto != null)
+                .map(json -> {
+                    try {
+                        return objectMapper.readValue(json, MessageDto.class);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException("Deserialization failed", e);
+                    }
+                })
                 .collect(Collectors.toList());
 
-        Long totalCount = redisTemplate.opsForZSet().zCard(key);
-        return new PageImpl<>(messages, pageable, totalCount == null ? 0 : totalCount);
-    }
+        Long total = redisTemplate.opsForZSet().zCard(key);
 
-    /**
-     * Save chat messages to a Redis sorted set with timestamp as score.
-     */
+        return new PageImpl<>(messages, pageable, total == null ? 0 : total);
+    }
     public void saveMessagesToRedisSortedSet(String email, List<Message> messages) {
         String key = email + ":chatMessagesSorted";
 
         try {
-            for (Message message : messages) {
-                MessageDto dto = convertToDto(message);
+            for (Message msg : messages) {
+                MessageDto dto = convertToDto(msg);
                 String json = objectMapper.writeValueAsString(dto);
-                double score = message.getCreatedAt().toInstant().toEpochMilli();
 
+                // Use message creation timestamp as score
+                double score = msg.getCreatedAt().toInstant().toEpochMilli();
                 redisTemplate.opsForZSet().add(key, json, score);
             }
 
+            // Set TTL: 3 days
             redisTemplate.expire(key, 3, TimeUnit.DAYS);
-            logger.info("Saved {} messages to Redis sorted set for {}", messages.size(), email);
 
+            logger.info("Saved {} messages to Redis sorted set for {}", messages.size(), email);
         } catch (Exception e) {
-            logger.error("Error saving messages to Redis sorted set for {}: {}", email, e.getMessage(), e);
+            logger.error("Error saving messages to Redis for {}: {}", email, e.getMessage(), e);
         }
     }
-
-    /**
-     * Converts a Message entity to a MessageDto.
-     */
     private static MessageDto convertToDto(Message message) {
         return new MessageDto(
                 message.getId(),
@@ -118,18 +110,6 @@ public class RedisUtility {
                 message.getPlatform(),
                 message.getCreatedAt()
         );
-    }
 
-    /**
-     * Safely deserialize JSON string to MessageDto, logs error if it fails.
-     */
-    private MessageDto safeDeserialize(String json) {
-        try {
-            return objectMapper.readValue(json, MessageDto.class);
-        } catch (JsonProcessingException e) {
-            logger.warn("Failed to deserialize message JSON: {}", e.getMessage());
-            return null;
-        }
     }
-}
- 
+    }

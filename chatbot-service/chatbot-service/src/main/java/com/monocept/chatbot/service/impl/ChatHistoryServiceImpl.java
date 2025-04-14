@@ -10,26 +10,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+//@Service
 public class ChatHistoryServiceImpl implements ChatHistoryService {
     private static final Logger logger = LoggerFactory.getLogger(ChatHistoryServiceImpl.class);
 
     private final ChatHistoryRepository chatHistoryRepository;
     private final RedisTemplate<String, Object> redisTemplate;
-    private final com.monocept.chatbot.repository.RedisChatHistoryRepository redisChatHistoryRepository;
+    private final com.monocept.chatbot.repository.RedisChatHistoryRepository1 redisChatHistoryRepository;
 
     public ChatHistoryServiceImpl(ChatHistoryRepository chatHistoryRepository,
                                   RedisTemplate<String, Object> redisTemplate,
-                                  com.monocept.chatbot.repository.RedisChatHistoryRepository redisChatHistoryRepository) {
+                                  com.monocept.chatbot.repository.RedisChatHistoryRepository1 redisChatHistoryRepository) {
         this.chatHistoryRepository = chatHistoryRepository;
         this.redisTemplate = redisTemplate;
         this.redisChatHistoryRepository = redisChatHistoryRepository;
@@ -40,7 +38,7 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
     public Page<MessageDto> getMessagesFromLast90Days(String email, int page, int size) {
         Message message = new Message();
         message.setId(5L);
-        message.setUserId("manish123");
+        message.setUserId("manish1234");
         message.setEmail("user123@gmail.com");
         message.setSendType(MessageSendType.MESSAGE);
         message.setMessageType(MessageType.TEXT);
@@ -98,6 +96,7 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
 
                 try {
                     Page<MessageDto> messagesFromDbDays = chatHistoryRepository.findMessagesFromDayswrtEmail(oneDayBeforeRedis, email, pageable);
+                   // Page<Message> messagesFromDbDays = chatHistoryRepository.findByEmail(email,pageable);
                     if (messagesFromDbDays != null && !messagesFromDbDays.isEmpty()) {
                         finalMessages.addAll(messagesFromDbDays.getContent());
                         logger.info("Found {} messages from the database for the past  days for email: {}", messagesFromDbDays.getContent().size(), email);
@@ -137,6 +136,16 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
         }
 
         return new PageImpl<>(finalMessages, pageable, finalMessages.size());
+    }
+
+    @Override
+    public Page<MessageDto> getMessagesFromDB(String email, int page, int size) {
+        return null;
+    }
+
+    @Override
+    public Page<MessageDto> getChatHistory(String email, int page, int size) {
+        return null;
     }
 
     public void storeNewMessageInRedis(String email, Message message) {
@@ -179,72 +188,6 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
             throw new RuntimeException("Error converting list to page.");
         }
     }
-
-    /**
-     * Fetches chat history for the last 3 days, paginated.
-     * Tries Redis first; if missing, falls back to DB and caches in Redis.
-     */
-    //aded by Arti
-   public   Page<MessageDto> getChatHistory(String email, int page, int size) {
-        // 1) Try Redis first
-       /* List<MessageDto> recentFromRedis = redisChatHistoryRepository.getChatHistoryDetailsEmail(email);
-        if (recentFromRedis != null && !recentFromRedis.isEmpty()) {
-            // manual pagination
-             //page  = pageable.getPageNumber();
-            //int size  = pageable.getPageSize();
-            Pageable pageable = PageRequest.of(page, size);
-            int start = page * size;
-            int end   = Math.min(start + size, recentFromRedis.size());
-
-            if (start < recentFromRedis.size()) {
-                List<MessageDto> slice = recentFromRedis.subList(start, end);
-                return new PageImpl<>(slice, pageable, recentFromRedis.size());
-            }
-        }*/
-
-        // 2) Fallback: Redis empty or out of range → load from DB
-        Page<MessageDto> dbPage = getMessagesFromDB(email, page, size);
-        System.out.println("db output:"+dbPage);
-        if (dbPage.isEmpty()) {
-            throw new ResourcesNotFoundException(
-                    "No messages found for the provided email in the last 3 days.");
-        }
-
-        // 3) Optionally cache this page in Redis for next time
-        //saveDataForLast3DaysToRedis(dbPage.getContent(), email);
-
-        return dbPage;
-    }
-
-    public Page<MessageDto> getMessagesFromDB(String email, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Message> messagePage = chatHistoryRepository.findByEmail(email, pageable);
-        System.out.println("db print:"+messagePage);
-        return messagePage.map(this::convertToDto);
-    }
-    private  MessageDto convertToDto(Message message) {
-        return new MessageDto(
-                message.getId(),
-                message.getUserId(),
-                message.getEmail(),
-                message.getSendType(),
-                message.getMessageType(),
-                message.getMessageId(),
-                message.getMessageTo(),
-                message.getText(),
-                message.getReplyToMessageId(),
-                message.getStatus(),
-                message.getEmoji(),
-                message.getAction(),
-                message.getMedia(),
-                message.getOptions(),
-                message.isBotOptions(),
-                message.getPlatform(),
-                message.getCreatedAt()
-        );
-
-    }
-
 
 
 }
