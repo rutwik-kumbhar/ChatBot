@@ -40,8 +40,8 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
     public Page<MessageDto> getMessagesFromLast90Days(String email, int page, int size) {
         Message message = new Message();
         message.setId(5L);
-        message.setUserId("user5");
-        message.setEmail("user5@example.com");
+        message.setUserId("manish123");
+        message.setEmail("user123@gmail.com");
         message.setSendType(MessageSendType.MESSAGE);
         message.setMessageType(MessageType.TEXT);
         message.setMessageId("msg-001");
@@ -57,8 +57,30 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
         message.setPlatform("mspace");
         message.setCreatedAt(ZonedDateTime.now());
         message.setUpdatedAt(ZonedDateTime.now());
-        storeNewMessageInRedis(email, message);
-
+  /*List<Message> message = List.of(
+                new Message() {{
+                    setId(5L);
+                    setUserId("userjais123");
+                    setEmail("user123@gmail.com");
+                    setSendType(MessageSendType.MESSAGE);
+                    setMessageType(MessageType.TEXT);
+                    setMessageId("msg-001");
+                    setMessageTo(MessageTo.USER);
+                    setText("Hello,how are you.");
+                    setReplyToMessageId("msg-0001");
+                    setStatus(MessageStatus.READ);
+                    setEmoji("\uD83D\uDE0A");
+                    setAction(Action.SELECTED);
+                    setMedia(new MediaDto());
+                    setOptions(List.of("Option 1", "Option 2", "Option 3"));
+                    setBotOptions(true);
+                    setPlatform("mspace");
+                    setCreatedAt(ZonedDateTime.now());
+                    setUpdatedAt(ZonedDateTime.now());
+                }}
+        );
+*/
+       storeNewMessageInRedis(email,message);
         Pageable pageable = PageRequest.of(page, size);
         List<MessageDto> finalMessages = new ArrayList<>();
 
@@ -70,18 +92,18 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
                 finalMessages.addAll(recentMessagesPage.getContent());
                 logger.info("Found {} recent messages from Redis for email: {}", finalMessages.size(), email);
 
-                // Fetch remaining messages from the database for the past 87 days
-                ZonedDateTime dateTime87DaysAgo = LocalDateTime.now()
-                        .minusDays(87)
-                        .atZone(ZoneId.systemDefault());
+                ZonedDateTime latestRedisDate = recentMessagesFromRedis.get(recentMessagesFromRedis.size() - 1).getCreatedAt();
+                ZonedDateTime oneDayBeforeRedis = latestRedisDate.minusDays(1);
+                logger.info(" date before redis  date: {}", oneDayBeforeRedis);
+
                 try {
-                    Page<MessageDto> messagesFromDb87Days = chatHistoryRepository.findMessagesFromDayswrtEmail(dateTime87DaysAgo, email, pageable);
-                    if (messagesFromDb87Days != null && !messagesFromDb87Days.isEmpty()) {
-                        finalMessages.addAll(messagesFromDb87Days.getContent());
-                        logger.info("Found {} messages from the database for the past 87 days for email: {}", messagesFromDb87Days.getContent().size(), email);
+                    Page<MessageDto> messagesFromDbDays = chatHistoryRepository.findMessagesFromDayswrtEmail(oneDayBeforeRedis, email, pageable);
+                    if (messagesFromDbDays != null && !messagesFromDbDays.isEmpty()) {
+                        finalMessages.addAll(messagesFromDbDays.getContent());
+                        logger.info("Found {} messages from the database for the past  days for email: {}", messagesFromDbDays.getContent().size(), email);
                     }
                 } catch (Exception e) {
-                    logger.error("Error fetching messages from database for the past 87 days for email {}: {}", email, e.getMessage());
+                    logger.error("Error fetching messages from database for the past  days for email {}: {}", email, e.getMessage());
                 }
             } else {
                 logger.info("No recent messages found in Redis, fetching from database for the last 90 days for email: {}", email);
@@ -157,4 +179,72 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
             throw new RuntimeException("Error converting list to page.");
         }
     }
+
+    /**
+     * Fetches chat history for the last 3 days, paginated.
+     * Tries Redis first; if missing, falls back to DB and caches in Redis.
+     */
+    //aded by Arti
+   public   Page<MessageDto> getChatHistory(String email, int page, int size) {
+        // 1) Try Redis first
+       /* List<MessageDto> recentFromRedis = redisChatHistoryRepository.getChatHistoryDetailsEmail(email);
+        if (recentFromRedis != null && !recentFromRedis.isEmpty()) {
+            // manual pagination
+             //page  = pageable.getPageNumber();
+            //int size  = pageable.getPageSize();
+            Pageable pageable = PageRequest.of(page, size);
+            int start = page * size;
+            int end   = Math.min(start + size, recentFromRedis.size());
+
+            if (start < recentFromRedis.size()) {
+                List<MessageDto> slice = recentFromRedis.subList(start, end);
+                return new PageImpl<>(slice, pageable, recentFromRedis.size());
+            }
+        }*/
+
+        // 2) Fallback: Redis empty or out of range → load from DB
+        Page<MessageDto> dbPage = getMessagesFromDB(email, page, size);
+        System.out.println("db output:"+dbPage);
+        if (dbPage.isEmpty()) {
+            throw new ResourcesNotFoundException(
+                    "No messages found for the provided email in the last 3 days.");
+        }
+
+        // 3) Optionally cache this page in Redis for next time
+        //saveDataForLast3DaysToRedis(dbPage.getContent(), email);
+
+        return dbPage;
+    }
+
+    public Page<MessageDto> getMessagesFromDB(String email, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Message> messagePage = chatHistoryRepository.findByEmail(email, pageable);
+        System.out.println("db print:"+messagePage);
+        return messagePage.map(this::convertToDto);
+    }
+    private  MessageDto convertToDto(Message message) {
+        return new MessageDto(
+                message.getId(),
+                message.getUserId(),
+                message.getEmail(),
+                message.getSendType(),
+                message.getMessageType(),
+                message.getMessageId(),
+                message.getMessageTo(),
+                message.getText(),
+                message.getReplyToMessageId(),
+                message.getStatus(),
+                message.getEmoji(),
+                message.getAction(),
+                message.getMedia(),
+                message.getOptions(),
+                message.isBotOptions(),
+                message.getPlatform(),
+                message.getCreatedAt()
+        );
+
+    }
+
+
+
 }

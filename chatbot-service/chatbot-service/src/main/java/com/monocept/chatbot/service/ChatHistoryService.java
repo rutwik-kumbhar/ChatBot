@@ -7,5 +7,7 @@ import org.springframework.data.domain.Page;
 public interface ChatHistoryService {
 
     Page<MessageDto> getMessagesFromLast90Days(String email, int page, int size);
+   // Page<MessageDto> getMessagesFromDB(String email, int page, int size);
+    Page<MessageDto> getChatHistory(String email, int page, int size);
 
 }

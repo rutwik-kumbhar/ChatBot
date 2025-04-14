@@ -1,8 +1,7 @@
 package com.monocept.chatbot.model.dto;
 
 import com.monocept.chatbot.enums.*;
-import com.monocept.chatbot.utils.MediaDtoConverter;
-import jakarta.persistence.Convert;
+
 import lombok.*;
 
 import java.io.Serializable;

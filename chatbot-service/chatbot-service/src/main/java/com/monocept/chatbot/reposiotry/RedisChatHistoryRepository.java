@@ -66,6 +66,9 @@ public class RedisChatHistoryRepository {
         }
         return histroy;
     }
+
+
+
     // Delete chat history from Redis for a specific email (if needed)
     public void deleteChatHistoryDetails(String email) {
         String key = email + "_chatHistoryDetails";

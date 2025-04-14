@@ -1,6 +1,6 @@
 # For the postgres
 server:
-  port: 9091
+  port: 8080
 spring:
   config:
     activate:
