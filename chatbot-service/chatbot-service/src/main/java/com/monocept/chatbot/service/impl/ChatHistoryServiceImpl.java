@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -23,11 +24,11 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
 
     private final ChatHistoryRepository chatHistoryRepository;
     private final RedisTemplate<String, Object> redisTemplate;
-    private final com.monocept.chatbot.repository.RedisChatHistoryRepository1 redisChatHistoryRepository;
+    private final com.monocept.chatbot.repository.RedisChatHistoryRepository redisChatHistoryRepository;
 
     public ChatHistoryServiceImpl(ChatHistoryRepository chatHistoryRepository,
                                   RedisTemplate<String, Object> redisTemplate,
-                                  com.monocept.chatbot.repository.RedisChatHistoryRepository1 redisChatHistoryRepository) {
+                                  com.monocept.chatbot.repository.RedisChatHistoryRepository redisChatHistoryRepository) {
         this.chatHistoryRepository = chatHistoryRepository;
         this.redisTemplate = redisTemplate;
         this.redisChatHistoryRepository = redisChatHistoryRepository;
@@ -145,6 +146,11 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
 
     @Override
     public Page<MessageDto> getChatHistory(String email, int page, int size) {
+        return null;
+    }
+
+    @Override
+    public Page<MessageDto> getChatHistoryNew(String email, int page, int size) {
         return null;
     }
 

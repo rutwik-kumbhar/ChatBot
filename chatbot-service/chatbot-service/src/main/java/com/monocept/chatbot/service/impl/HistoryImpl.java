@@ -4,12 +4,14 @@ import com.monocept.chatbot.Entity.Message;
 import com.monocept.chatbot.exceptions.ResourcesNotFoundException;
 import com.monocept.chatbot.model.dto.MessageDto;
 import com.monocept.chatbot.reposiotry.ChatHistoryRepository;
+import com.monocept.chatbot.repository.RedisChatHistoryRepository;
 import com.monocept.chatbot.service.ChatHistoryService;
-import com.monocept.chatbot.utils.RedisUtility1;
+import com.monocept.chatbot.utils.RedisUtilityNew;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -22,23 +24,28 @@ import java.util.stream.Collectors;
 
 
 @Service
+@Primary
 public class HistoryImpl implements ChatHistoryService {
 
     @Autowired
     private ModelMapper modelMapper;
     private static final Logger logger = LoggerFactory.getLogger(ChatHistoryServiceImpl.class);
-    private  final RedisUtility1 redisUtility;
+    private  final RedisUtilityNew redisUtility;
     private final ChatHistoryRepository chatHistoryRepository;
     private final RedisTemplate<String, Object> redisTemplate;
-    private final com.monocept.chatbot.repository.RedisChatHistoryRepository1 redisChatHistoryRepository;
+    private final com.monocept.chatbot.repository.RedisChatHistoryRepository redisChatHistoryRepository;
 
-    public HistoryImpl(RedisUtility1 redisUtility, ChatHistoryRepository chatHistoryRepository, RedisTemplate<String, Object> redisTemplate, com.monocept.chatbot.repository.RedisChatHistoryRepository1 redisChatHistoryRepository) {
+    public HistoryImpl(RedisUtilityNew redisUtility, ChatHistoryRepository chatHistoryRepository, RedisTemplate<String, Object> redisTemplate, RedisChatHistoryRepository redisChatHistoryRepository) {
         this.redisUtility = redisUtility;
         this.chatHistoryRepository = chatHistoryRepository;
         this.redisTemplate = redisTemplate;
         this.redisChatHistoryRepository = redisChatHistoryRepository;
     }
+    public Page<MessageDto> getChatHistoryNew(String email, int page, int size){
+        Pageable pageable = PageRequest.of(page, size);
+      return   redisUtility.getPaginatedMessagesFromRedis(email,pageable);
 
+    }
     public Page<MessageDto> getChatHistory(String email, int page, int size) {
         // 1) Try Redis firs
         //

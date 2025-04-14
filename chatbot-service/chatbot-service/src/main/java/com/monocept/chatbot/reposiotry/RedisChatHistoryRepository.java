@@ -1,97 +1,194 @@
-package com.monocept.chatbot.reposiotry;
-
+package com.monocept.chatbot.repository;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.monocept.chatbot.Entity.Message;
 import com.monocept.chatbot.model.dto.MessageDto;
-import com.monocept.chatbot.util.RedisUtil;
-import com.monocept.chatbot.utils.RedisUtility;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Repository
 public class RedisChatHistoryRepository {
+    public static final String HASH_KEY = "chathistory_details";
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final  ModelMapper modelMapper;
+    private final ObjectMapper objectMapper;
+    private static final Logger logger = LoggerFactory.getLogger(com.monocept.chatbot.repository.RedisChatHistoryRepository.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(RedisChatHistoryRepository.class);
-    private static final String HASH_KEY = "chathistory_details";
-
-    private final RedisUtility redisUtil;
-    private final ModelMapper modelMapper;
-
-    public RedisChatHistoryRepository(RedisUtility redisUtil, ModelMapper modelMapper) {
-        this.redisUtil = redisUtil;
+    public RedisChatHistoryRepository(RedisTemplate<String, Object> redisTemplate, ModelMapper modelMapper, ObjectMapper objectMapper) {
+        this.redisTemplate = redisTemplate;
         this.modelMapper = modelMapper;
+        this.objectMapper = objectMapper;
     }
 
-    public void saveChatHistory(String email, Message chatMessage) {
+    // Save recent chat history details into Redis
+    public void saveChatHistoryDetails(String email, Message chatHistoryDetails) {
+        logger.info("Saving chat history details in Redis for email: {}", email);
         try {
-            logger.info("Saving single chat message in Redis for email: {}", email);
-            String key = email + "_latest";
-            MessageDto dto = modelMapper.map(chatMessage, MessageDto.class);
-            redisUtil.hashPut(HASH_KEY, key, dto);
-            redisUtil.expire(key, 3, TimeUnit.DAYS);
-        } catch (Exception e) {
-            logger.error("Error while saving single message to Redis", e);
+            String key = email + "_newchatHistoryDetails";
+            // Convert History object to HistoryDTO (or other relevant object) before saving
+            MessageDto chatHistoryDTO = convertToDTO1(chatHistoryDetails);
+          //  String messgedto = objectMapper.writeValueAsString(chatHistoryDetails);
+            redisTemplate.opsForHash().put(HASH_KEY, key, chatHistoryDTO);
+            redisTemplate.expire(key, 3, TimeUnit.DAYS);  // Cache for 3 Days
+        } catch (Exception ex) {
+            logger.error("saveChatHistoryDetails: Exception occurred while saving in Redis: {}", ex.getMessage(), ex);
         }
     }
 
-    public void saveAllMessages(String email, List<Message> messages) {
+    public  void  saveAll(String email, List<Message> chatHistoryDetails) {
+        logger.info("Saving sorted chat history in Redis list for email: {}", email);
         try {
-            logger.info("Saving full chat history in Redis for email: {}", email);
-            String key = email + "_full";
+            String key = email;
 
-            List<MessageDto> dtoList = messages.stream()
-                    .map(msg -> modelMapper.map(msg, MessageDto.class))
+            // Sort descending
+           // chatHistoryDetails.sort(Comparator.comparing(Message::getCreatedAt).reversed());
+
+            // Convert to DTOs
+            List<MessageDto> chatHistoryDTOs = chatHistoryDetails.stream()
+                    .map(this::convertToDto)
                     .collect(Collectors.toList());
 
-            //redisUtil.listDelete(key); // clear old
-            //dtoList.forEach(dto -> redisUtil.listRightPush(key, dto));
-            //redisUtil.expire(key, 3, TimeUnit.DAYS);
-        } catch (Exception e) {
-            logger.error("Error while saving chat history list to Redis", e);
+            // Clear old list if exists
+            redisTemplate.delete(key);
+
+            // Push all to Redis list
+            for (MessageDto dto : chatHistoryDTOs) {
+                redisTemplate.opsForList().rightPush(key, dto);
+            }
+            redisTemplate.expire(key, 3, TimeUnit.DAYS);
+        } catch (Exception ex) {
+            logger.error("Exception while saving chat history in Redis List: {}", ex.getMessage(), ex);
         }
     }
 
-    public List<MessageDto> getLatestMessage(String email) {
-        try {
-            String key = email + "_latest";
-            Object obj = redisUtil.hashGet(HASH_KEY, key);
-            if (obj != null) {
-                return Collections.singletonList(modelMapper.map(obj, MessageDto.class));
-            }
-        } catch (Exception e) {
-            logger.error("Error while retrieving latest message from Redis", e);
-        }
-        return Collections.emptyList();
+    public MessageDto convertToDto(Message message) {
+        MessageDto dto = new MessageDto();
+        dto.setId(message.getId());
+        dto.setUserId(message.getUserId());
+        dto.setEmail(message.getEmail());
+        dto.setSendType(message.getSendType());
+        dto.setMessageType(message.getMessageType());
+        dto.setMessageId(message.getMessageId());
+        dto.setMessageTo(message.getMessageTo());
+        dto.setText(message.getText());
+        dto.setReplyToMessageId(message.getReplyToMessageId());
+        dto.setStatus(message.getStatus());
+        dto.setEmoji(message.getEmoji());
+        dto.setAction(message.getAction());
+        dto.setMedia(message.getMedia());
+        dto.setOptions(message.getOptions());
+        dto.setBotOptions(message.isBotOptions());
+        dto.setPlatform(message.getPlatform());
+        dto.setCreatedAt(message.getCreatedAt());
+        return dto;
+    }
+    private MessageDto convertToDTO1(Message chatHistoryDetails) throws JsonProcessingException {
+        return modelMapper.map(chatHistoryDetails, MessageDto.class);
     }
 
-    public List<MessageDto> getFullHistory(String email) {
+    // Get recent chat history details from Redis for a specific email
+    public List<MessageDto> getChatHistoryDetailsEmail1(String email) {
+        String key = email + "_newchatHistoryDetails";
+        List<MessageDto> histroy=new ArrayList<>();
         try {
-            String key = email + "_full";
-            List<Object> rawList = redisUtil.listRange(key, 0, -1);
-            if (rawList == null || rawList.isEmpty()) return Collections.emptyList();
-
-            List<MessageDto> history = new ArrayList<>();
-            for (Object obj : rawList) {
-                history.add(modelMapper.map(obj, MessageDto.class));
+            logger.info("Fetching chat history details from Redis for email: {}", email);
+            // Retrieve the specific chat history for the given email (key)
+            Object chatHistoryRaw = redisTemplate.opsForHash().get(HASH_KEY, key);
+            // If data exists for this email
+            if (chatHistoryRaw != null) {
+                logger.info("Retrieved chat history for email: {}", chatHistoryRaw);
+                logger.info("Fetching chat history details from Redis for chatHistoryRaw: {}", chatHistoryRaw.toString());
+                MessageDto messageDto = modelMapper.map(chatHistoryRaw, MessageDto.class);
+                histroy.add(messageDto);
             }
-            return history;
         } catch (Exception e) {
-            logger.error("Error while retrieving full chat history from Redis", e);
+            // Log the error with the exception details
+            logger.error("Error occurred while fetching chat history details from Redis for email: {}", email, e);
             return Collections.emptyList();
         }
+        return histroy;
     }
 
-    public void deleteHistory(String email) {
-        redisUtil.hashDelete(HASH_KEY, email + "_latest");
-        redisUtil.delete(email + "_full");
+    public List<MessageDto> getChatHistoryDetailsEmail(String email) {
+        String key = email;
+        List<MessageDto> history = new ArrayList<>();
+
+        try {
+            logger.info("Fetching chat history details from Redis for email: {}", email);
+
+            Object chatHistoryRaw = redisTemplate.opsForHash().get(HASH_KEY, key);
+
+            if (chatHistoryRaw != null) {
+                logger.info("Retrieved chat history from Redis: {}", chatHistoryRaw);
+
+                // Cast or convert to list
+                if (chatHistoryRaw instanceof List<?>) {
+                    List<?> rawList = (List<?>) chatHistoryRaw;
+
+                    for (Object obj : rawList) {
+                        // Convert each entry to MessageDto
+                        MessageDto dto = modelMapper.map(obj, MessageDto.class);
+                        history.add(dto);
+                    }
+                } else {
+                    logger.warn("Redis data is not a list for key: {}", key);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error fetching chat history for email: {}", email, e);
+            return Collections.emptyList();
+        }
+
+        return history;
+    }
+
+
+    // Delete chat history from Redis for a specific email (if needed)
+    public void deleteChatHistoryDetails(String email) {
+        String key = email + "_chatHistoryDetails";
+        redisTemplate.opsForHash().delete(HASH_KEY, key);
+    }
+
+    public Page<Message> findPaginatedByEmail(String email, Pageable pageable) {
+        String key = email + ":chatMessagesSorted";
+
+        long start = (long) pageable.getPageNumber() * pageable.getPageSize();
+        long end = start + pageable.getPageSize() - 1;
+
+        Set<Object> rawMessages = redisTemplate.opsForZSet().reverseRange(key, start, end);
+        if (rawMessages == null || rawMessages.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        List<Message> messages = rawMessages.stream()
+                .map(raw -> {
+                    try {
+                        return objectMapper.readValue((JsonParser) raw, Message.class);
+                    } catch (Exception e) {
+                        logger.error("Deserialization error: {}", e.getMessage());
+                        return null;
+                    }
+                })
+                .filter(msg -> msg != null)
+                .collect(Collectors.toList());
+
+        Long total = redisTemplate.opsForZSet().zCard(key);
+        return new PageImpl<>(messages, pageable, total == null ? 0 : total);
     }
 }
 
- 
+
+

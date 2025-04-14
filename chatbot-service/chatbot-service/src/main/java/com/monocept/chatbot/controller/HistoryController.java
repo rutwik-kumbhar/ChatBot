@@ -82,7 +82,7 @@ public class HistoryController {
             String email = messageRequest.getEmail();
 
             // Call to service layer to get messages from the last 90 days
-            Page<MessageDto> messages = chatHistoryService.getChatHistory(messageRequest.email,messageRequest.page,messageRequest.size);
+            Page<MessageDto> messages = chatHistoryService.getChatHistoryNew(messageRequest.email,messageRequest.page,messageRequest.size);
             MasterResponse<Page<MessageDto>> response;
             if (messages != null && !messages.isEmpty()) {
                 // Success case, messages found
