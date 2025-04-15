@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -42,11 +44,10 @@ public interface ChatHistoryRepository extends JpaRepository<Message, Long> {
          "ORDER BY c.createdAt DESC")
  Page<MessageDto> findMessagesFromDayswrtEmail(@Param("createdAt") ZonedDateTime createdAt, @Param("email") String email, Pageable pageable);
 
-    //  void deleteByDateTimeBefore(LocalDateTime dateTime);
   @Modifying
+  @Transactional
   @Query("DELETE FROM Message h WHERE h.createdAt < :createdAt")
   void deleteByDateTimeBefore(@Param("createdAt") ZonedDateTime createdAt);
-
 
  Page<Message> findByEmail(String email, Pageable pageable);
 

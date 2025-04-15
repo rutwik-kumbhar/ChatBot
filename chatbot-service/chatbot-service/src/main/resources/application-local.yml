@@ -30,3 +30,8 @@ redis:
     host: localhost
     port: 6379
 
+chat:
+  history:
+    cron: "0 7 16 * * ?"
+
+
