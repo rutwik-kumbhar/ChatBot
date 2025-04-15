@@ -15,27 +15,29 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Component
-public class RedisUtilityNew {
+public class RedisUtility {
 
-    private static final Logger logger = LoggerFactory.getLogger(RedisUtilityNew.class);
+    private static final Logger logger = LoggerFactory.getLogger(RedisUtility.class);
     private final ObjectMapper objectMapper;
     private final RedisTemplate<String, String> redisTemplate;
     private final RedisChatHistoryRepository redisChatHistoryRepository;
     private final ChatHistoryRepository chatHistoryRepository;
+    private final String redisSuffix=":chatMessagesSorted";
+    private final int redisTTL=3;
 
-    public RedisUtilityNew(ObjectMapper objectMapper, RedisTemplate<String, String> redisTemplate, RedisChatHistoryRepository redisChatHistoryRepository, ChatHistoryRepository chatHistoryRepository) {
+    public RedisUtility(ObjectMapper objectMapper, RedisTemplate<String, String> redisTemplate, RedisChatHistoryRepository redisChatHistoryRepository, ChatHistoryRepository chatHistoryRepository) {
         this.objectMapper = objectMapper;
         this.redisTemplate = redisTemplate;
         this.redisChatHistoryRepository = redisChatHistoryRepository;
         this.chatHistoryRepository = chatHistoryRepository;
     }
 
-    public void saveDataForLast3DaysToRedis(List<Message> messages, String email) {
+    public void saveLatestDataToRedis(List<Message> messages, String email) {
         try {
             redisChatHistoryRepository.saveAll(email, messages);
             logger.info("Cached {} messages in Redis for {}", messages.size(), email);
@@ -45,20 +47,20 @@ public class RedisUtilityNew {
     }
 
     public Page<MessageDto> getPaginatedMessagesFromRedis(String email, Pageable pageable) {
-        String key = email + ":chatMessagesSorted";
+        String key = email + redisSuffix;
         long start = (long) pageable.getPageNumber() * pageable.getPageSize();
         long end = start + pageable.getPageSize() - 1;
 
         // Step 1: Try fetching from Redis
         Set<String> rawMessages = redisTemplate.opsForZSet().reverseRange(key, start, end);
 
-        if (rawMessages != null && !rawMessages.isEmpty()) {
+        if (!rawMessages.isEmpty()) {
             logger.info("Fetched {} messages from Redis for {}", rawMessages.size(), email);
 
             List<MessageDto> messages = rawMessages.stream()
                     .map(this::safeDeserialize)
-                    .filter(dto -> dto != null)
-                    .collect(Collectors.toList());
+                    .filter(Objects::nonNull).toList();
+
 
             Long totalCount = redisTemplate.opsForZSet().zCard(key);
             return new PageImpl<>(messages, pageable, totalCount == null ? 0 : totalCount);
@@ -66,7 +68,6 @@ public class RedisUtilityNew {
 
         // Step 2: If Redis is empty, fallback to DB
         logger.info("No chat history in Redis for {}. Fetching from DB...", email);
-       // Page<Message> dbMessages = redisChatHistoryRepository.findPaginatedByEmail(email, pageable);
         Page<Message> dbMessages =   chatHistoryRepository.findByEmail(email,pageable);
 
         if (dbMessages == null || dbMessages.isEmpty()) {
@@ -78,8 +79,8 @@ public class RedisUtilityNew {
 
         // Step 4: Convert to DTO and return
         List<MessageDto> dtoList = dbMessages.getContent().stream()
-                .map(RedisUtilityNew::convertToDto)
-                .collect(Collectors.toList());
+                .map(RedisUtility::convertToDto).toList();
+
 
         return new PageImpl<>(dtoList, pageable, dbMessages.getTotalElements());
     }
@@ -94,7 +95,7 @@ public class RedisUtilityNew {
     }
 
     public void saveMessagesToRedisSortedSet(String email, List<Message> messages) {
-        String key = email + ":chatMessagesSorted";
+        String key = email +redisSuffix;
         try {
             for (Message msg : messages) {
                 MessageDto dto = convertToDto(msg);
@@ -104,14 +105,30 @@ public class RedisUtilityNew {
                 redisTemplate.opsForZSet().add(key, json, score);
             }
             // Set TTL: 3 days
-            redisTemplate.expire(key, 3, TimeUnit.DAYS);
+            redisTemplate.expire(key, redisTTL, TimeUnit.DAYS);
             logger.info("Saved {} messages to Redis sorted set for {}", messages.size(), email);
         } catch (Exception e) {
             logger.error("Error saving messages to Redis for {}: {}", email, e.getMessage(), e);
         }
     }
 
-    private static MessageDto convertToDto(Message message) {
+    public void saveMessageToRedisSortedSet(String email, Message msg) {
+        String key = email +redisSuffix;
+        try {
+
+                MessageDto dto = convertToDto(msg);
+                String json = objectMapper.writeValueAsString(dto);
+                // Use message creation timestamp as score
+                double score = msg.getCreatedAt().toInstant().toEpochMilli();
+                redisTemplate.opsForZSet().add(key, json, score);
+
+            // Set TTL: 3 days
+            redisTemplate.expire(key, redisTTL, TimeUnit.DAYS);
+            logger.info("Saved {} message to Redis sorted set for {}", msg, email);
+        } catch (Exception e) {
+            logger.error("Error saving messages to Redis for {}: {}", email, e.getMessage(), e);
+        }
+    }    private static MessageDto convertToDto(Message message) {
         return new MessageDto(
                 message.getId(),
                 message.getUserId(),
