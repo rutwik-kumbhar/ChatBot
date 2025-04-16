@@ -4,7 +4,7 @@ server:
 spring:
   config:
     activate:
-      on-profile: local
+      on-profile: test
   datasource:
     url: jdbc:postgresql://postgres:5432/chatbot
     username: postgres
