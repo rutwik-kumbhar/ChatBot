@@ -6,7 +6,7 @@ spring:
     activate:
       on-profile: local
   datasource:
-    url: jdbc:postgresql://localhost:5432/chatbot
+    url: jdbc:postgresql://postgres:5432/chatbot
     username: postgres
     password: root
     driver-class-name: org.postgresql.Driver
@@ -29,10 +29,11 @@ payload:
     type: AES/CBC/NoPadding
 
 redis:
-  host: localhost
+  host: redis  #
   port: 6379
 
 mli:
   message:
     send:
-      url: http://localhost:8081/api/v1/message/send
+      url: http://host.docker.internal:8081/api/v1/message/send
+      # 🔁 If 8081 is hosted on host machine, use host.docker.internal (for Linux, see below)

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,8 +28,8 @@ public class CognitoController {
         this.cognitoService = cognitoService;
     }
 
-    @PostMapping("/cognito-token")
-    public ResponseEntity<MasterResponse<Map<String, String>>> generateToken(@RequestBody UserInfo request) {
+    @PostMapping("/cognito/token")
+    public ResponseEntity<MasterResponse<Map<String, String>>> generateToken(@RequestBody @Valid UserInfo request) {
         MasterResponse<Map<String, String>> response;
         try {
             String token = cognitoService.getCognitoToken(request);
