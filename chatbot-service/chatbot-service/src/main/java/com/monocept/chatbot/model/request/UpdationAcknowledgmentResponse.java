@@ -1,6 +1,5 @@
 package com.monocept.chatbot.model.request;
 
-import com.monocept.chatbot.entity.Option;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

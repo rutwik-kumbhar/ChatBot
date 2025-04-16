@@ -1,72 +1,84 @@
 package com.monocept.chatbot.service.impl;
 
 import com.monocept.chatbot.entity.PlaceHolder;
+import com.monocept.chatbot.model.dto.NameIconDto;
 import com.monocept.chatbot.model.request.OptionPlaceholderRequest;
 import com.monocept.chatbot.model.request.UpdationAcknowledgmentResponse;
 import com.monocept.chatbot.reposiotry.PlaceholderRepository;
 import com.monocept.chatbot.service.PlaceholderService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class PlaceHolderServiceImpl implements PlaceholderService {
 
-    private  final  PlaceholderRepository placeholderRepository;
+    private final PlaceholderRepository placeholderRepository;
 
-    public PlaceHolderServiceImpl(PlaceholderRepository placeholderRepository) {
-        this.placeholderRepository = placeholderRepository;
+    @Override
+    public List<NameIconDto> getAllPlaceholders() {
+        log.info("getAllPlaceholders : Start : Fetching all placeholder names");
+         return placeholderRepository.findPlaceholderNames();
+
     }
 
     @Override
-    public List<String> getAllPlaceholders() {
-        return  placeholderRepository.findPlaceholderNames();
-    }
+    public List<PlaceHolder> addPlaceholders(OptionPlaceholderRequest optionPlaceholderRequest) {
+        log.info("Adding new placeholders");
 
-    @Override
-    public List<PlaceHolder> addPlaceholders(List<String> options) {
-        List<PlaceHolder> list = options.stream().map(s -> PlaceHolder.builder().name(s).build()).toList();
-        return placeholderRepository.saveAll(list);
+        List<PlaceHolder> placeholders = optionPlaceholderRequest.getData()
+                .stream()
+                .map(data -> PlaceHolder.builder()
+                        .name(data.getName())
+                        .icon(data.getIcon())
+                        .build())
+                .toList();
+
+        List<PlaceHolder> savedPlaceholders = placeholderRepository.saveAll(placeholders);
+        log.info("Added {} placeholders", savedPlaceholders.size());
+        return savedPlaceholders;
     }
 
     @Override
     public String updatePlaceholder(String name) {
-        return placeholderRepository.deleteByPlaceholderName(name) == 0
-                ? "No matching record found to update."
-                : "Record  updated.";
+        log.info("Updating placeholder with name: {}", name);
+        int rowsAffected = placeholderRepository.deleteByPlaceholderName(name);
+        if (rowsAffected == 0) {
+            log.warn("No placeholder found with name: {} to update", name);
+            return "No matching record found to update.";
+        } else {
+            log.info("Successfully updated placeholder: {}", name);
+            return "Record updated.";
+        }
     }
 
     @Override
     public String deletePlaceholder(String name) {
-        return placeholderRepository.deleteByPlaceholderName(name) == 0
-                ? "No matching record found to update."
-                : "Record  deleted.";
+        log.info("Deleting placeholder with name: {}", name);
+        int rowsAffected = placeholderRepository.deleteByPlaceholderName(name);
+        if (rowsAffected == 0) {
+            log.warn("No placeholder found with name: {} to delete", name);
+            return "No matching record found to update.";
+        } else {
+            log.info("Successfully deleted placeholder: {}", name);
+            return "Record deleted.";
+        }
     }
 
     @Override
-    public Object optionDataHandler(OptionPlaceholderRequest request)  {
-        return switch (request.getMethodType().name().toLowerCase()) {
-            case "add" -> this.addPlaceholders(request.getNames());
-            case "update" -> processOptions(request.getNames(), this::updatePlaceholder);
-            case "delete" -> processOptions(request.getNames(), this::deletePlaceholder);
-            default -> throw  new NoSuchElementException("Invalid option perform");
-        };
-    }
-
-    @Override
-    public UpdationAcknowledgmentResponse<PlaceHolder> updatePlaceholderHandler(List<String> names) {
+    public UpdationAcknowledgmentResponse<PlaceHolder> placeholderDataHandler(OptionPlaceholderRequest request) {
+        log.info("Handling placeholder data update request");
         placeholderRepository.deleteAllOptions();
-        List<PlaceHolder> placeHolders = addPlaceholders(names);
-        return new UpdationAcknowledgmentResponse<>(placeHolders.size(),  placeHolders );
-    }
+        log.info("Deleted all existing placeholders");
 
-    private Map<String, String> processOptions(List<String> options, Function<String, String> action) {
-        return options.stream().collect(Collectors.toMap(option -> option, action));
-    }
+        List<PlaceHolder> placeHolders = addPlaceholders(request);
 
+        log.info("Successfully handled placeholder data update. Total new records: {}", placeHolders.size());
+        return new UpdationAcknowledgmentResponse<>(placeHolders.size(), placeHolders);
+    }
 }
+

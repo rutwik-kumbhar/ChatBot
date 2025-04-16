@@ -1,6 +1,7 @@
 package com.monocept.chatbot.service.impl;
 
 import com.monocept.chatbot.entity.Option;
+import com.monocept.chatbot.model.dto.NameIconDto;
 import com.monocept.chatbot.model.request.OptionPlaceholderRequest;
 import com.monocept.chatbot.model.request.UpdateOptionPlaceholderRequest;
 import com.monocept.chatbot.model.request.UpdationAcknowledgmentResponse;
@@ -12,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -28,50 +28,25 @@ public class OptionServiceImpl implements OptionService {
     }
 
     @Override
-    public List<String> getAllOptions() {
+    public List<NameIconDto> getAllOptions() {
         return optionRepository.findOptionNames();
     }
 
     @Override
-    public List<Option> addOptions(List<String> options) {
-        log.info("addOptions : start {}" , options);
-        List<Option> list = options.stream().map(s -> Option.builder().name(s).build()).toList();
-        log.info("addOptions : options added data {}" , list);
-        return optionRepository.saveAll(list);
+    public List<Option> addOptions(OptionPlaceholderRequest optionPlaceholderRequest) {
+        log.info("addOptions : start {}" , optionPlaceholderRequest);
+        List<Option> options =  optionPlaceholderRequest.getData()
+                .stream()
+                .map(data ->
+                        Option.builder()
+                                .name(data.getName())
+                                .icon(data.getIcon())
+                                .build())
+                .collect(Collectors.toList());
+        log.info("addOptions : options added data {}" , options);
+        return optionRepository.saveAll(options);
     }
 
-    @Override
-    public UpdateOptionPlaceholderResponse updateOption(List<UpdateOptionPlaceholderRequest> updateRequest) {
-        log.info("updateOption : start {}" , updateRequest);
-        int totalRecords = updateRequest.size();
-
-        Map<Boolean, List<UpdateOptionPlaceholderRequest>> result = updateRequest.stream()
-                .collect(Collectors.partitioningBy(update ->
-                        optionRepository.updateOptionByName(update.getNewValue(), update.getOldValue()) > 0
-                ));
-
-        log.info("updateOption : updated result {}" , result);
-
-        List<String> updatedRecords = result.get(true).stream()
-                .map(UpdateOptionPlaceholderRequest::getOldValue)
-                .toList();
-
-        log.info("updateOption : updated records {}" , updatedRecords);
-
-        List<String> unupdatedRecords = result.get(false).stream()
-                .map(UpdateOptionPlaceholderRequest::getOldValue)
-                .toList();
-
-        log.info("updateOption : unupdated records {}" , unupdatedRecords);
-
-        int totalUpdated = updatedRecords.size();
-        int totalUnupdated = unupdatedRecords.size();
-
-        log.info("updateOption : updated records count {}" , totalUpdated);
-        log.info("updateOption : unupdated records count {}" , totalUnupdated);
-
-        return new UpdateOptionPlaceholderResponse(totalRecords, totalUpdated, totalUnupdated, updatedRecords, unupdatedRecords);
-    }
 
     @Override
     public DeleteOptionResponse deleteOption(List<String> name) {
@@ -87,20 +62,12 @@ public class OptionServiceImpl implements OptionService {
     }
 
     @Override
-    public UpdationAcknowledgmentResponse<Option> updateOptionsHandler(List<String> names) {
+    public UpdationAcknowledgmentResponse<Option> optionDataHandler(OptionPlaceholderRequest request) {
         optionRepository.deleteAllOptions();
-        List<Option> options = this.addOptions(names);
+        List<Option> options = this.addOptions(request);
         return new UpdationAcknowledgmentResponse<>(options.size(),  options);
     }
 
-    public Object optionDataHandler(OptionPlaceholderRequest request)  {
-        return switch (request.getMethodType().name().toLowerCase()) {
-            case "add" -> this.addOptions(request.getNames());
-            case "update" -> this.updateOption(request.getUpdateRequest());
-            case "delete" -> this.deleteOption(request.getNames());
-            default -> throw  new NoSuchElementException("Invalid option perform");
-        };
-    }
 
 
 }

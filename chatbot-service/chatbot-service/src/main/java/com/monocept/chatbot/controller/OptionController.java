@@ -34,7 +34,7 @@ public class OptionController {
         log.info("optionDataHandler : start {}" , request);
         MasterResponse<Object> response;
             try {
-                UpdationAcknowledgmentResponse<Option> object = optionService.updateOptionsHandler(request.getNames());
+                UpdationAcknowledgmentResponse<Option> object = optionService.optionDataHandler(request);
                 String message =  object.getTotalUpdated() > 0 ? "Records updated successfully." : "No records found to updated.";
                 response = new MasterResponse<>(Status.SUCCESS.name(),HttpStatus.OK.value(), message, object );
                  return ResponseEntity.status(HttpStatus.OK).body(response);
