@@ -44,8 +44,6 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
     }
 
 
-
-
     public Page<MessageDto> getMessagesFromDB(String email, int page, int size) {
         logger.debug("Querying database for email: {}, page: {}, size: {}", email, page, size);
         Pageable pageable = PageRequest.of(page, size);
