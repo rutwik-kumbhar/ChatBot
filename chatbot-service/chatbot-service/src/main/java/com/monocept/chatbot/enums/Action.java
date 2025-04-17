@@ -4,4 +4,3 @@ public enum Action {
     SELECTED,
     DESELECTED;
 }
-

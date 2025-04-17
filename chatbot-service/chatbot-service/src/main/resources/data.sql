@@ -23,3 +23,4 @@ INSERT INTO option (id, name, icon) VALUES
 (9, 'Download Documents', 'U+1F4E5'),
 (10, 'Update Profile', 'U+1F464')
 ON CONFLICT (id) DO NOTHING;
+

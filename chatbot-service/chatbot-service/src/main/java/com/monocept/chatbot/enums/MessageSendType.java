@@ -5,4 +5,3 @@ public enum MessageSendType {
     ACKNOWLEDGEMENT,
     REACTION;
 }
-

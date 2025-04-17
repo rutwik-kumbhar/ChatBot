@@ -7,4 +7,3 @@ public enum MessageType {
     TEXT,
     REPLY_TO_LANDING_PAGE;
 }
-

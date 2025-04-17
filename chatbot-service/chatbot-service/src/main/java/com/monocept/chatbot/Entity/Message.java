@@ -1,17 +1,17 @@
-package com.monocept.chatbot.entity;
-
+package com.monocept.chatbot.Entity;
 import com.monocept.chatbot.enums.*;
 import com.monocept.chatbot.model.dto.MediaDto;
 import com.monocept.chatbot.utils.MediaDtoConverter;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.w3c.dom.stylesheets.LinkStyle;
-
+import lombok.NoArgsConstructor;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "message")
 public class Message {
@@ -29,7 +29,6 @@ public class Message {
     @Enumerated(EnumType.STRING)
     private MessageSendType sendType;
 
-
     @Enumerated(EnumType.STRING)
     private MessageType messageType;
 
@@ -38,7 +37,6 @@ public class Message {
 
     @Enumerated(EnumType.STRING)
     private MessageTo messageTo;
-
 
     @Column(columnDefinition = "TEXT")
     private String text;
@@ -59,11 +57,10 @@ public class Message {
     @Convert(converter = MediaDtoConverter.class)
     private MediaDto media;
 
-
     @Column(columnDefinition = "jsonb")
-    private List<String> botOptions;
+    private List<String> options;
 
-    private boolean option;
+    private boolean botOptions;
 
     @Column(length =  10)
     private String platform;
@@ -71,4 +68,5 @@ public class Message {
     private ZonedDateTime createdAt;
 
     private ZonedDateTime updatedAt;
+
 }

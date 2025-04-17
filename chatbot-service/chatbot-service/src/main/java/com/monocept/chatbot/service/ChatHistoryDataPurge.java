@@ -1,5 +1,5 @@
-//package com.monocept.chatbot.service;
+package com.monocept.chatbot.service;
 
-//public interface ChatHistoryDataPurge {
-  //  public void deleteHistoryData90Days();
-//}
+public interface ChatHistoryDataPurge {
+    public void deleteDataOlderThanNDays();
+}
