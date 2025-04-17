@@ -2,15 +2,19 @@ package com.monocept.chatbot.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 public class ApplicationConfig {
@@ -24,7 +28,6 @@ public class ApplicationConfig {
 
     @Bean
     public ObjectMapper objectMapper() {
-        log.info("bean created");
         ObjectMapper objectMapper = new ObjectMapper();
 
         // Ignore unknown properties during deserialization
@@ -35,5 +38,23 @@ public class ApplicationConfig {
         objectMapper.registerModule(new JavaTimeModule());
 
         return objectMapper;
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
+
+
+    @Bean(name = "taskExecutor")
+    public Executor taskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);       // Always keep 10 threads alive
+        executor.setMaxPoolSize(30);        // Max up to 30 threads
+        executor.setQueueCapacity(100);     // 100 tasks can wait
+        executor.setThreadNamePrefix("ElyApp-Async-");
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
+        executor.initialize();
+        return executor;
     }
 }

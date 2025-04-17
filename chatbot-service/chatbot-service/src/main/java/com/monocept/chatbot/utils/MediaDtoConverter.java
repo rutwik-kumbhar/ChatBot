@@ -17,7 +17,6 @@ public class MediaDtoConverter implements AttributeConverter<MediaDto, String> {
         this.objectMapper = objectMapper;
     }
 
-
     @Override
     public String convertToDatabaseColumn(MediaDto mediaDto) {
         try {
@@ -35,5 +34,7 @@ public class MediaDtoConverter implements AttributeConverter<MediaDto, String> {
             throw new RuntimeException("Error converting JSON to MediaDto", e);
         }
     }
+
+
 
 }

@@ -1,14 +1,18 @@
 package com.monocept.chatbot.entity;
-
 import com.monocept.chatbot.enums.*;
+import com.monocept.chatbot.model.dto.MediaDto;
+import com.monocept.chatbot.utils.MediaDtoConverter;
 import com.monocept.chatbot.utils.StringListConverter;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-
+import lombok.NoArgsConstructor;
 import java.time.ZonedDateTime;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "message")
 public class Message {
@@ -50,9 +54,9 @@ public class Message {
     @Enumerated(EnumType.STRING)
     private Action action;
 
-//    @Column(columnDefinition = "jsonb")
-//    @Convert(converter = MediaDtoConverter.class)
-//    private MediaDto media;
+    @Column(columnDefinition = "jsonb")
+    @Convert(converter = MediaDtoConverter.class)
+    private MediaDto media;
 
     @Column(columnDefinition = "jsonb")
     @Convert(converter = StringListConverter.class)
@@ -66,4 +70,5 @@ public class Message {
     private ZonedDateTime createdAt;
 
     private ZonedDateTime updatedAt;
+
 }

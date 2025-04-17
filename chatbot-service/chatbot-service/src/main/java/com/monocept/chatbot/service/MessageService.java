@@ -1,6 +1,6 @@
 package com.monocept.chatbot.service;
 
-import com.monocept.chatbot.model.dto.MessageDTO;
+import com.monocept.chatbot.model.dto.MessageDto;
 import com.monocept.chatbot.model.dto.ReceiveMessageDTO;
 import com.monocept.chatbot.model.request.SendMessageRequest;
 import com.monocept.chatbot.model.response.ReceiveMessageResponse;

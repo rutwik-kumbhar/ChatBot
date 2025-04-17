@@ -1,19 +1,14 @@
 package com.monocept.chatbot.service.impl;
 
-import com.corundumstudio.socketio.SocketConfig;
+import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
-import com.monocept.chatbot.component.ChatEventHandler;
 import com.monocept.chatbot.component.SocketClientManager;
-import com.monocept.chatbot.config.SocketIOConfig;
-import com.monocept.chatbot.entity.History;
 import com.monocept.chatbot.entity.Message;
 import com.monocept.chatbot.enums.MessageSendType;
 import com.monocept.chatbot.enums.MessageStatus;
 import com.monocept.chatbot.exceptions.MessageNotFoundException;
-import com.monocept.chatbot.exceptions.ResourcesNotFoundException;
 import com.monocept.chatbot.exceptions.SessionNotFoundException;
-import com.monocept.chatbot.model.dto.HistoryDTO;
-import com.monocept.chatbot.model.dto.MessageDTO;
+import com.monocept.chatbot.model.dto.MessageDto;
 import com.monocept.chatbot.model.dto.ReceiveMessageDTO;
 import com.monocept.chatbot.model.request.SendMessageRequest;
 import com.monocept.chatbot.model.response.MLIMessageResponse;
@@ -23,9 +18,8 @@ import com.monocept.chatbot.model.response.SendMessageResponse;
 import com.monocept.chatbot.reposiotry.MessageRepository;
 import com.monocept.chatbot.reposiotry.RedisChatHistoryRepository;
 import com.monocept.chatbot.service.MessageService;
-import io.netty.channel.unix.Socket;
-import io.socket.client.IO;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -34,17 +28,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import com.corundumstudio.socketio.SocketIOClient;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
 
     @Value("${socketio.client.url}")
@@ -60,25 +51,25 @@ public class MessageServiceImpl implements MessageService {
     private final RedisTemplate<String, String> redisTemplate;
     private SocketIOClient client;
     private final SocketIOServer server;
-    private SocketClientManager clientManager;
+    private final SocketClientManager clientManager;
 
-    public MessageServiceImpl(MessageRepository messageRepository, ModelMapper modelMapper, RedisChatHistoryRepository redisChatHistoryRepository,
-                              RedisTemplate<String, String> redisTemplate, SocketIOServer server, SocketClientManager clientManager) {
-        this.messageRepository = messageRepository;
-        this.modelMapper = modelMapper;
-        this.redisChatHistoryRepository = redisChatHistoryRepository;
-        this.redisTemplate = redisTemplate;
-        this.server = server;
-        this.clientManager = clientManager;
-    }
+//    public MessageServiceImpl(MessageRepository messageRepository, ModelMapper modelMapper, RedisChatHistoryRepository redisChatHistoryRepository,
+//                              RedisTemplate<String, String> redisTemplate, SocketIOServer server, SocketClientManager clientManager) {
+//        this.messageRepository = messageRepository;
+//        this.modelMapper = modelMapper;
+//        this.redisChatHistoryRepository = redisChatHistoryRepository;
+//        this.redisTemplate = redisTemplate;
+//        this.server = server;
+//        this.clientManager = clientManager;
+//    }
 
     @Override
     @Transactional
     public SendMessageResponse processMessage(SendMessageRequest messageRequest) {
         Message message = getMessage(messageRequest);
         String session = getSession(message.getUserId());// move before database call
-        List<MessageDTO> chatHistoryDetailsEmail = redisChatHistoryRepository.getChatHistoryDetailsEmail(messageRequest.getEmailId());
-        chatHistoryDetailsEmail.add(modelMapper.map(message, MessageDTO.class));
+        List<MessageDto> chatHistoryDetailsEmail = redisChatHistoryRepository.getChatHistoryDetailsEmail(messageRequest.getEmailId());
+        chatHistoryDetailsEmail.add(modelMapper.map(message, MessageDto.class));
         redisChatHistoryRepository.saveChatHistoryDetails(messageRequest.getEmailId(), chatHistoryDetailsEmail);
 
         SendMessageResponse sendMessageResponse = new SendMessageResponse();
@@ -156,12 +147,12 @@ public class MessageServiceImpl implements MessageService {
         return sessionId;
     }
 
-    private Mono<MasterResponse<MLIMessageResponse>> sendMessageToMLI(MessageDTO messageDTO) {
+    private Mono<MasterResponse<MLIMessageResponse>> sendMessageToMLI(MessageDto messageDTO) {
         WebClient webClient = webClientBuilder.build();
 
         return webClient.post()
                 .uri(messageUrl)
-                .body(Mono.just(messageDTO), MessageDTO.class)
+                .body(Mono.just(messageDTO), MessageDto.class)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<MasterResponse<MLIMessageResponse>>() {})
                 .doOnError(error -> System.err.println("Error sending to third party: " + error.getMessage()));
@@ -173,8 +164,8 @@ public class MessageServiceImpl implements MessageService {
         messageRepository.save(message);
         String sessionId = getSession(message.getUserId());
 //        getSession(receiveMessageDTO.getUserId());
-        List<MessageDTO> chatHistoryDetailsEmail = redisChatHistoryRepository.getChatHistoryDetailsEmail(receiveMessageDTO.getEmailId());
-        chatHistoryDetailsEmail.add(modelMapper.map(message, MessageDTO.class));
+        List<MessageDto> chatHistoryDetailsEmail = redisChatHistoryRepository.getChatHistoryDetailsEmail(receiveMessageDTO.getEmailId());
+        chatHistoryDetailsEmail.add(modelMapper.map(message, MessageDto.class));
         redisChatHistoryRepository.saveChatHistoryDetails(receiveMessageDTO.getEmailId(), chatHistoryDetailsEmail);
         client = clientManager.getClient(receiveMessageDTO.getUserId());
 //        client.sendEvent("chat_message", "botResponse");

@@ -1,7 +1,7 @@
 package com.monocept.chatbot.model.request;
 
+import com.monocept.chatbot.enums.BotCommunicationFlow;
 import com.monocept.chatbot.enums.MessageTo;
-import com.monocept.chatbot.enums.StatusFlag;
 import com.monocept.chatbot.model.dto.MediaDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class ReceiveMessageRequest {
     private String emailId;
     private String userId;
-    private StatusFlag status;
+    private BotCommunicationFlow status;
     private String platform;
     private boolean isConversationEnded;
     private Entry entry;

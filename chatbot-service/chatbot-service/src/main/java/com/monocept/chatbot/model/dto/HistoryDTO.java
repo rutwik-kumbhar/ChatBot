@@ -3,6 +3,7 @@ package com.monocept.chatbot.model.dto;
 import lombok.*;
 
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class HistoryDTO {
+public class HistoryDTO implements Serializable {
     private Long  msgId;
     private String msg;
     private String messageTo;
@@ -20,4 +21,7 @@ public class HistoryDTO {
     private String mediaUrl;
     private String activity;
 
+
 }
+
+

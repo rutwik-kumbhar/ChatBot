@@ -4,7 +4,6 @@ package com.monocept.chatbot.entity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
 
 @Builder
 @Data
@@ -18,6 +17,11 @@ public class PlaceHolder {
     @Column(name = "id")
     private long id;
 
+
+    @Column( unique = true , length = 200)
     private String name;
+
+    @Column( length = 100)
+    private String icon;
 
 }

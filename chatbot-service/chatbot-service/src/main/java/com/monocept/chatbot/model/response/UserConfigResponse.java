@@ -1,25 +1,25 @@
 package com.monocept.chatbot.model.response;
 
 
-import com.monocept.chatbot.entity.Option;
-import com.monocept.chatbot.entity.PlaceHolder;
-import com.monocept.chatbot.enums.StatusFlag;
+import com.monocept.chatbot.enums.BotCommunicationFlow;
+import com.monocept.chatbot.model.dto.NameIconDto;
+import com.monocept.chatbot.model.request.UserInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @Builder
 @Data
 public class UserConfigResponse {
-    private UserInfo user;
-    private List<String> options;
-    private List<String> placeHolders;
+    private UserInfo userInfo;
+    private List<NameIconDto> options;
+    private List<NameIconDto> placeHolders;
     private String botName;
-    private StatusFlag statusFlag;
+    private BotCommunicationFlow statusFlag;
     private String dateTime;
 
 }

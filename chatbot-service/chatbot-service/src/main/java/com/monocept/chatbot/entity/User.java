@@ -1,17 +1,21 @@
 package com.monocept.chatbot.entity;
 
 
-import com.monocept.chatbot.enums.StatusFlag;
+import com.monocept.chatbot.enums.BotCommunicationFlow;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
 
-
+@Builder
 @Data
 @Entity
 @Table(name = "users")
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -21,14 +25,12 @@ public class User {
     private long id;
 
     @Column(length = 10)
-    private String ssoId;
-
-    @Column(length = 10)
     private String agentId;
 
-    @Column(length =  100, nullable = false)
+    @Column(length =  50, nullable = false)
     private String firstName;
 
+    @Column(length =  50, nullable = false)
     private String lastName;
 
     @Column(length = 30 , nullable = false, unique = true )
@@ -43,16 +45,11 @@ public class User {
     @Column(length = 100 , nullable = false)
     private String deviceId;
 
-    @Column(length = 100)
-    private String sessionId;
-
     @Enumerated(EnumType.STRING)
-    private StatusFlag statusFlag;
+    private BotCommunicationFlow statusFlag;
 
-//    @CreationTimestamp // Automatically set on insert time
     private ZonedDateTime createdAt;
 
-//    @UpdateTimestamp  // Automatically set on insert time
     private ZonedDateTime updatedAt;
 
 }

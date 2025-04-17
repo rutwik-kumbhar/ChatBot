@@ -1,54 +1,77 @@
 package com.monocept.chatbot.service.impl;
 
-import com.monocept.chatbot.exceptions.ResourcesNotFoundException;
-import com.monocept.chatbot.model.dto.HistoryDTO;
-import com.monocept.chatbot.Exception.InvalidEmailException;
+import com.monocept.chatbot.entity.Message;
+import com.monocept.chatbot.model.dto.MessageDto;
 import com.monocept.chatbot.reposiotry.ChatHistoryRepository;
+import com.monocept.chatbot.reposiotry.RedisChatHistoryRepository;
 import com.monocept.chatbot.service.ChatHistoryService;
-import jakarta.transaction.Transactional;
+import com.monocept.chatbot.utils.RedisUtility;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatHistoryServiceImpl implements ChatHistoryService {
 
-    private final ChatHistoryRepository chatHistoryRepository;
     private static final Logger logger = LoggerFactory.getLogger(ChatHistoryServiceImpl.class);
-    public ChatHistoryServiceImpl(ChatHistoryRepository chatHistoryRepository) {
+
+    private final RedisUtility redisUtility;
+    private final ChatHistoryRepository chatHistoryRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisChatHistoryRepository redisChatHistoryRepository;
+    private ModelMapper modelMapper;
+
+    public ChatHistoryServiceImpl(ModelMapper modelMapper, RedisChatHistoryRepository redisChatHistoryRepository, RedisTemplate<String, Object> redisTemplate, ChatHistoryRepository chatHistoryRepository, RedisUtility redisUtility) {
+        this.modelMapper = modelMapper;
+        this.redisChatHistoryRepository = redisChatHistoryRepository;
+        this.redisTemplate = redisTemplate;
         this.chatHistoryRepository = chatHistoryRepository;
+        this.redisUtility = redisUtility;
     }
 
-    @Override
-    @Transactional
-    public Page<HistoryDTO> getMessagesFromLast90Days(String email,int page, int size) {
-        if (email == null || email.isEmpty()) {
-            logger.error("Email is null or empty");
-            throw new InvalidEmailException("Email is null or empty");
-        }
-        logger.info("Fetching messages for email: {}", email);
-        try {
-        // Calculate the dateTime 90 days ago from the current date
-        LocalDateTime dateTime90DaysAgo = LocalDateTime.now().minus(90, ChronoUnit.DAYS);
-        // Create a Pageable object for pagination
+    public Page<MessageDto> getChatHistory(String email, int page, int size) {
+        logger.info("Fetching chat history (new) for email: {}, page: {}, size: {}", email, page, size);
         Pageable pageable = PageRequest.of(page, size);
+        return redisUtility.getPaginatedMessagesFromRedis(email, pageable);
+    }
 
-        Page<HistoryDTO> messages = chatHistoryRepository.findMessagesFromLast90DayswrtEmail(dateTime90DaysAgo,email,pageable);
 
-        if (messages.isEmpty()) {
-            logger.warn("No messages found for email: {}", email);
-            throw new ResourcesNotFoundException("No messages found for the provided email in the last 90 days.");
-        }
-        return messages;
-        } catch (Exception ex) {
-            logger.error("An error occurred while fetching messages for email: {}. Error: {}", email, ex.getMessage(), ex);
-            throw new RuntimeException("An error occurred while processing the request.", ex);
-        }
+    public Page<MessageDto> getMessagesFromDB(String email, int page, int size) {
+        logger.debug("Querying database for email: {}, page: {}, size: {}", email, page, size);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Message> messagePage = chatHistoryRepository.findByEmail(email, pageable);
+        logger.info("Database query returned {} records for email: {}", messagePage.getContent().size(), email);
+        return messagePage.map(this::convertToDto);
+    }
 
+    private MessageDto convertToDto(Message message) {
+        logger.debug("Converting message entity to DTO: {}", message.getId());
+        return new MessageDto(
+                message.getId(),
+                message.getUserId(),
+                message.getEmail(),
+                message.getSendType(),
+                message.getMessageType(),
+                message.getMessageId(),
+                message.getMessageTo(),
+                message.getText(),
+                message.getReplyToMessageId(),
+                message.getStatus(),
+                message.getEmoji(),
+                message.getAction(),
+                message.getMedia(),
+                message.getOptions(),
+                message.isBotOptions(),
+                message.getPlatform(),
+                message.getCreatedAt()
+        );
     }
 }
