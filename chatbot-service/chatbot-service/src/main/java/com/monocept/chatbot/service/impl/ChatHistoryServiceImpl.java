@@ -74,4 +74,5 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
                 message.getCreatedAt()
         );
     }
+
 }
