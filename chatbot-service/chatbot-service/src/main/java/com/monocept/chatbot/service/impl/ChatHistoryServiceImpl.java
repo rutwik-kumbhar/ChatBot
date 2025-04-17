@@ -1,9 +1,9 @@
 package com.monocept.chatbot.service.impl;
 
-import com.monocept.chatbot.Entity.Message;
+import com.monocept.chatbot.entity.Message;
 import com.monocept.chatbot.model.dto.MessageDto;
 import com.monocept.chatbot.reposiotry.ChatHistoryRepository;
-import com.monocept.chatbot.repository.RedisChatHistoryRepository;
+import com.monocept.chatbot.reposiotry.RedisChatHistoryRepository;
 import com.monocept.chatbot.service.ChatHistoryService;
 import com.monocept.chatbot.utils.RedisUtility;
 import org.modelmapper.ModelMapper;

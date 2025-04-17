@@ -2,10 +2,10 @@ package com.monocept.chatbot.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.monocept.chatbot.Entity.Message;
+import com.monocept.chatbot.entity.Message;
 import com.monocept.chatbot.model.dto.MessageDto;
 import com.monocept.chatbot.reposiotry.ChatHistoryRepository;
-import com.monocept.chatbot.repository.RedisChatHistoryRepository;
+import com.monocept.chatbot.reposiotry.RedisChatHistoryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;

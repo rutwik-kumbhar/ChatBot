@@ -5,5 +5,5 @@ public enum MessageType {
     REPLY_TO_INTERACTIVE,
     REPLY_TO_MESSAGE,
     TEXT,
-    REPLY_TO_LANDING_PAGE;
+    REPLY_TO_LANDING_PAGE
 }
