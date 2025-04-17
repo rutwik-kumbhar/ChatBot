@@ -1,4 +1,4 @@
-/*package com.monocept.chatbot.service.impl;
+package com.monocept.chatbot.service.impl;
 
 import com.monocept.chatbot.entity.PlaceHolder;
 import com.monocept.chatbot.model.dto.NameIconDto;
@@ -79,4 +79,3 @@ public class PlaceHolderServiceImpl implements PlaceholderService {
         return new UpdationAcknowledgmentResponse<>(placeHolders.size(), placeHolders);
     }
 }
-*/

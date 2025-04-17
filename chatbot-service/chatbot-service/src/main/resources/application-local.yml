@@ -15,6 +15,7 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
   sql:
     init:
       mode: always
@@ -41,13 +42,11 @@ mli:
     send:
       url: http://localhost:8081/api/v1/message/send
 
-chatbot:
-  name: Ely
-
-
 
 chat:
   history:
     cron: "0 7 16 * * ?"
 
 
+chatbot:
+  name: Ely
