@@ -59,7 +59,7 @@ public class Message {
     private MediaDto media;
 
     @Column(columnDefinition = "jsonb")
-    @Convert(converter = StringListConverter.class)
+   // @Convert(converter = StringListConverter.class)
     private List<String> options;
 
     private boolean botOptions;
