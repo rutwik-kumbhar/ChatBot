@@ -1,8 +1,8 @@
-package com.monocept.chatbot.repository;
+package com.monocept.chatbot.reposiotry;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.monocept.chatbot.Entity.Message;
+import com.monocept.chatbot.entity.Message;
 import com.monocept.chatbot.model.dto.MessageDto;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ public class RedisChatHistoryRepository {
     private final RedisTemplate<String, Object> redisTemplate;
     private final  ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
-    private static final Logger logger = LoggerFactory.getLogger(com.monocept.chatbot.repository.RedisChatHistoryRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(RedisChatHistoryRepository.class);
 
     public RedisChatHistoryRepository(RedisTemplate<String, Object> redisTemplate, ModelMapper modelMapper, ObjectMapper objectMapper) {
         this.redisTemplate = redisTemplate;
@@ -84,7 +84,12 @@ public class RedisChatHistoryRepository {
     }
 
 
+    public List<MessageDto> getChatHistoryDetailsEmail(String emailId) {
+        return new ArrayList<>();
+    }
 
+    public void saveChatHistoryDetails(String emailId, List<MessageDto> chatHistoryDetailsEmail) {
+    }
 }
 
 

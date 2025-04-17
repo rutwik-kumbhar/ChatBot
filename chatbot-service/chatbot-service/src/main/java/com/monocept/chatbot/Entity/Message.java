@@ -1,7 +1,8 @@
-package com.monocept.chatbot.Entity;
+package com.monocept.chatbot.entity;
 import com.monocept.chatbot.enums.*;
 import com.monocept.chatbot.model.dto.MediaDto;
 import com.monocept.chatbot.utils.MediaDtoConverter;
+import com.monocept.chatbot.utils.StringListConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -58,6 +59,7 @@ public class Message {
     private MediaDto media;
 
     @Column(columnDefinition = "jsonb")
+    @Convert(converter = StringListConverter.class)
     private List<String> options;
 
     private boolean botOptions;
