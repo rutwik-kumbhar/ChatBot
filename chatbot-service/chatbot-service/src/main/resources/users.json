@@ -1,0 +1,52 @@
+[
+  {
+    "agentId": "AGT001",
+    "firstName": "Rutwik",
+    "lastName": "Kumbhar",
+    "ssoId": "sso123456",
+    "email": "rutwik.kumbhar@example.com",
+    "role": "admin",
+    "firebaseId": "firebase_001",
+    "deviceId": "device_001"
+  },
+  {
+    "agentId": "AGT002",
+    "firstName": "Sneha",
+    "lastName": "Patil",
+    "ssoId": "sso789012",
+    "email": "sneha.patil@example.com",
+    "role": "user",
+    "firebaseId": "firebase_002",
+    "deviceId": "device_002"
+  },
+  {
+    "agentId": "AGT003",
+    "firstName": "Amit",
+    "lastName": "Deshmukh",
+    "ssoId": "sso345678",
+    "email": "amit.deshmukh@example.com",
+    "role": "manager",
+    "firebaseId": "firebase_003",
+    "deviceId": "device_003"
+  },
+  {
+    "agentId": "AGT004",
+    "firstName": "Priya",
+    "lastName": "Sharma",
+    "ssoId": "sso456789",
+    "email": "priya.sharma@example.com",
+    "role": "support",
+    "firebaseId": "firebase_004",
+    "deviceId": "device_004"
+  },
+  {
+    "agentId": "AGT005",
+    "firstName": "Rahul",
+    "lastName": "Verma",
+    "ssoId": "sso567890",
+    "email": "rahul.verma@example.com",
+    "role": "analyst",
+    "firebaseId": "firebase_005",
+    "deviceId": "device_005"
+  }
+]

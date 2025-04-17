@@ -1,6 +1,6 @@
-# For the postgres
 server:
   port: 9093
+
 spring:
   config:
     activate:
@@ -8,14 +8,13 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/chatbot
     username: postgres
-    password: test
+    password: root
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
-
   sql:
     init:
       mode: always
@@ -32,7 +31,6 @@ payload:
   decryption:
     type: AES/CBC/NoPadding
 
-
 redis:
   host: localhost
   port: 6379
@@ -42,6 +40,7 @@ mli:
     send:
       url: http://localhost:8081/api/v1/message/send
     url: https://third-party.com/webhook/message
+
 socketio:
   hostname: localhost
   port: 9092
@@ -51,8 +50,7 @@ socketio:
 
 chat:
   history:
-    cron: "0 7 16 * * ?"
-
+    cron: "0 7 16 * * ?" # Every day at 4:07 PM
 
 chatbot:
   name: Ely

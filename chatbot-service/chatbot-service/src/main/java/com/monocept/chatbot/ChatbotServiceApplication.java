@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-//@EntityScan(basePackages = "com.monocept.chatbot.Entity")
 public class ChatbotServiceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ChatbotServiceApplication.class, args);
