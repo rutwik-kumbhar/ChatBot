@@ -1,12 +1,12 @@
-# For the postgres
 server:
   port: 9092
+
 spring:
   config:
     activate:
-      on-profile: local
+      on-profile: test
   datasource:
-    url: jdbc:postgresql://localhost:5432/chatbot
+    url: jdbc:postgresql://postgres:5432/chatbot
     username: postgres
     password: root
     driver-class-name: org.postgresql.Driver
@@ -15,9 +15,6 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-  sql:
-    init:
-      mode: always
 
 logging:
   level:
@@ -31,23 +28,16 @@ payload:
   decryption:
     type: AES/CBC/NoPadding
 
-
 redis:
-  host: localhost
+  host: redis
   port: 6379
 
 mli:
   message:
     send:
-      url: http://localhost:8081/api/v1/message/send
+      url: http://host.docker.internal:8081/api/v1/message/send
+      # If port 8081 is hosted on the host machine, use host.docker.internal.
+      # For Linux, host.docker.internal may not work by default — use the host IP or Docker bridge IP instead.
 
 chatbot:
-  name: Ely
-
-
-
-chat:
-  history:
-    cron: "0 7 16 * * ?"
-
-
+  name: :Ely

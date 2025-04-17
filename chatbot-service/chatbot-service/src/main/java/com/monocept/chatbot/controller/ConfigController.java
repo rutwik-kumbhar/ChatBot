@@ -26,7 +26,6 @@ public class ConfigController {
 
     @PostMapping("/user/config")
     public ResponseEntity<MasterResponse<UserConfigResponse>> getUserConfig(@RequestBody GetUserConfigRequest request) {
-        log.info("getUserConfig  {}", request );
         try {
             UserConfigResponse userConfiguration = configService.getConfiguration(request);
             MasterResponse<UserConfigResponse> response = new MasterResponse<>(Status.SUCCESS.name(), HttpStatus.OK.value(), "User config fetched successfully", userConfiguration);

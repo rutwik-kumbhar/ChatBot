@@ -1,22 +1,26 @@
 package com.monocept.chatbot.model.request;
 
 
-import com.monocept.chatbot.enums.MethodType;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OptionPlaceholderRequest {
 
 
-    private List<String> names;
+    private List<Data> data;
 
-    private List<UpdateOptionPlaceholderRequest> updateRequest;
-
-    @NotNull(message = "Method type cannot be null")
-    private MethodType methodType;
+    @lombok.Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Data {
+        private String name;
+        private String icon;
+    }
 }

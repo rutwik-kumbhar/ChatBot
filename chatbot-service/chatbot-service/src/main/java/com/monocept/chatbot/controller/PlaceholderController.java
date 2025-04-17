@@ -31,7 +31,7 @@ public class PlaceholderController {
     public ResponseEntity<MasterResponse<Object>> optionDataHandler(@RequestBody @Valid OptionPlaceholderRequest request){
         MasterResponse<Object> response;
         try {
-            UpdationAcknowledgmentResponse<PlaceHolder> object = placeholderService.updatePlaceholderHandler(request.getNames());
+            UpdationAcknowledgmentResponse<PlaceHolder> object = placeholderService.placeholderDataHandler(request);
             String message =  object.getTotalUpdated() > 0 ? "Records updated successfully." : "No records found to updated.";
             response = new MasterResponse<>(Status.SUCCESS.name(), HttpStatus.OK.value(), message, object );
             return ResponseEntity.status(HttpStatus.OK).body(response);
