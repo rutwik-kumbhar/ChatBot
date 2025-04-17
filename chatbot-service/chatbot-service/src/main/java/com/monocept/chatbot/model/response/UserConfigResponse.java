@@ -10,16 +10,17 @@ import lombok.Data;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @Builder
 @Data
 public class UserConfigResponse {
-    private UserInfo user;
+    private Map<String,Object> userInfo;
     private List<String> options;
     private List<String> placeHolders;
     private String botName;
     private StatusFlag statusFlag;
-    private ZonedDateTime dateTime;
+    private String dateTime;
 
 }

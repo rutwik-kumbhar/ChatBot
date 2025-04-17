@@ -6,7 +6,7 @@ spring:
     activate:
       on-profile: local
   datasource:
-    url: jdbc:postgresql://localhost:5432/chat_history_db
+    url: jdbc:postgresql://localhost:5432/chatbot
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -19,11 +19,26 @@ logging:
   level:
     root: INFO
 
-mli:
+payload:
+  encryption:
+    key: MK234S98CLKSJRE98WEK54JFSD989SDF
+    iv: 9LP300U3920Y3KK3
+    type: AES/CBC/PKCS5Padding
+  decryption:
+    type: AES/CBC/NoPadding
 
+
+redis:
+  host: localhost
+  port: 6379
+
+mli:
   message:
     send:
       url: http://localhost:8081/api/v1/message/send
+
+
+
 
 
 redis:
