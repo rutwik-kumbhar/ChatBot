@@ -38,3 +38,6 @@ mli:
       url: http://host.docker.internal:8081/api/v1/message/send
       # If port 8081 is hosted on the host machine, use host.docker.internal.
       # For Linux, host.docker.internal may not work by default — use the host IP or Docker bridge IP instead.
+
+chatbot:
+  name: :Ely

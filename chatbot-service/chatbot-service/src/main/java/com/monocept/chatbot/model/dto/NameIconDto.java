@@ -1,3 +1,14 @@
 package com.monocept.chatbot.model.dto;
 
-public record NameIconDto(String name, String icon) {}
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class NameIconDto {
+    private String name;
+    private String icon;
+
+}

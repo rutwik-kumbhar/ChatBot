@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   app:
-    build: .
+    image: rutwikkumbhar/chatbot:latest  # <- Replace with your actual image name if different
     container_name: spring_app
     ports:
       - "9090:9092"
@@ -81,8 +81,6 @@ services:
 
 
 
-
-
 #version: '3.8'
 #
 #services:
@@ -104,7 +102,7 @@ services:
 #    image: rutwikkumbhar/chatbot:latest
 #    container_name: chatbot_backend
 #    ports:
-#      - "9091:9090"  # Host port 9091 mapped to container 9090 to avoid conflict with `app`
+#      - "9091:9092"
 #    environment:
 #      - ENV_VAR_NAME=value
 #    restart: always
@@ -152,4 +150,3 @@ services:
 #      - "8081:8081"
 #    depends_on:
 #      - redis
-#

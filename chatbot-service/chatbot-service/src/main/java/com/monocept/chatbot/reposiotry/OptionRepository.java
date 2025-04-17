@@ -13,14 +13,18 @@ import java.util.List;
 
 public interface OptionRepository  extends JpaRepository<Option, Long> {
 
-    @Query("SELECT new com.monocept.chatbot.model.dto.NameIconDto(o.name, o.icon) FROM PlaceHolder o")
+    @Query("SELECT new com.monocept.chatbot.model.dto.NameIconDto(o.name, o.icon) FROM Option o")
     List<NameIconDto> findOptionNames();
-
 
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM option WHERE name IN :names", nativeQuery = true)
-    int deleteByOptionNames(@Param("names") List<String> names);
+    @Query(value = "UPDATE option SET name = name", nativeQuery = true)
+    int updatePlaceholderByName(@Param("name") String name);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM option WHERE name = :name", nativeQuery = true)
+    int  deleteByPlaceholderName(@Param("name") String name);
 
 
     @Async

@@ -12,9 +12,11 @@ import com.monocept.chatbot.service.OptionService;
 import com.monocept.chatbot.service.PlaceholderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +26,9 @@ import java.util.Optional;
 @Service
 public class ConfigServiceImpl implements ConfigService {
 
+
+    @Value("${chatbot.name}")
+    private String chatBotName;
 
     private  final OptionService optionService;
     private final PlaceholderService placeholderService;
@@ -36,30 +41,29 @@ public class ConfigServiceImpl implements ConfigService {
 
         List<NameIconDto> options = optionService.getAllOptions();
         List<NameIconDto> placeholders = placeholderService.getAllPlaceholders();
-        Optional<UserInfo> userInfo = getUserInfoData(request.getAgentId());
+        Optional<UserInfo> userInfo = getUserInfoDataFromRedis(request.getAgentId());
         return UserConfigResponse.builder()
                 .userInfo(userInfo.orElse(null))
                 .options(options)
                 .placeHolders(placeholders)
-                .botName("Ely") // Need to fetch later from db
+                .botName(chatBotName)
                 .statusFlag(BotCommunicationFlow.COACH)
                 .dateTime(ZonedDateTime.now().toString()).build();
     }
 
-    public Optional<UserInfo> getUserInfoData(String agentId) {
-        String redisKey = "user:request:" + agentId;
+    public Optional<UserInfo> getUserInfoDataFromRedis(String agentId) {
+        String redisKey = String.format("user:%s", agentId);
         try {
             Object object = redisTemplate.opsForValue().get(redisKey);
             if (object != null) {
-                UserInfo userInfo = objectMapper.readValue((JsonParser) object, UserInfo.class);
+                UserInfo userInfo = objectMapper.readValue(object.toString(), UserInfo.class);
                 return Optional.of(userInfo);
             } else {
-                log.warn("No user info found in Redis for agentId: {}", agentId);
+                log.error("getUserInfoDataFromRedis : No user info found in Redis for agentId: {}", agentId);
             }
         } catch (Exception e) {
-            log.error("Error while fetching user info from Redis for agentId: {}", agentId, e);
+            log.error("getUserInfoDataFromRedis : Error while fetching user info from Redis for agentId: {}", agentId, e.getMessage());
         }
-
         return Optional.empty();
     }
 

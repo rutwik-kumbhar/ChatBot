@@ -12,7 +12,8 @@ public interface OptionService {
 
     List<NameIconDto> getAllOptions();
     List<Option> addOptions(OptionPlaceholderRequest request);
-    DeleteOptionResponse deleteOption(List<String> name);
+    String updateOption(String name);
+    String  deleteOption(String name);
     UpdationAcknowledgmentResponse<Option> optionDataHandler(OptionPlaceholderRequest request);
 
 

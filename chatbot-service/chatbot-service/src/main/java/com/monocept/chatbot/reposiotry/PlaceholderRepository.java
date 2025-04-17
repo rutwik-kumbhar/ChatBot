@@ -27,7 +27,7 @@ public interface PlaceholderRepository extends JpaRepository<PlaceHolder, Long> 
     @Query(value = "DELETE FROM placeholder WHERE name = :name", nativeQuery = true)
     int  deleteByPlaceholderName(@Param("name") String name);
 
-    @Async
+    @Async("taskExecutor")
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM placeholder", nativeQuery = true)

@@ -21,14 +21,14 @@ public class PlaceHolderServiceImpl implements PlaceholderService {
 
     @Override
     public List<NameIconDto> getAllPlaceholders() {
-        log.info("getAllPlaceholders : Start : Fetching all placeholder names");
+        log.info("getAllPlaceholders: Start fetching all placeholder names");
          return placeholderRepository.findPlaceholderNames();
 
     }
 
     @Override
     public List<PlaceHolder> addPlaceholders(OptionPlaceholderRequest optionPlaceholderRequest) {
-        log.info("Adding new placeholders");
+        log.info("addPlaceholders: Start adding new placeholders");
 
         List<PlaceHolder> placeholders = optionPlaceholderRequest.getData()
                 .stream()
@@ -39,46 +39,43 @@ public class PlaceHolderServiceImpl implements PlaceholderService {
                 .toList();
 
         List<PlaceHolder> savedPlaceholders = placeholderRepository.saveAll(placeholders);
-        log.info("Added {} placeholders", savedPlaceholders.size());
+        log.info("addPlaceholders: Successfully added {} new placeholders", savedPlaceholders.size());
         return savedPlaceholders;
     }
 
     @Override
     public String updatePlaceholder(String name) {
-        log.info("Updating placeholder with name: {}", name);
-        int rowsAffected = placeholderRepository.deleteByPlaceholderName(name);
+        log.info("updatePlaceholder: Start updating placeholder with name: {}", name);
+        int rowsAffected = placeholderRepository.updatePlaceholderByName(name);
         if (rowsAffected == 0) {
-            log.warn("No placeholder found with name: {} to update", name);
-            return "No matching record found to update.";
+            log.info("updatePlaceholder: No placeholder found with name '{}' to update", name);
+            return "No matching placeholder found for update.";
         } else {
-            log.info("Successfully updated placeholder: {}", name);
-            return "Record updated.";
+            log.info("updatePlaceholder: Successfully updated placeholder with name '{}'", name);
+            return "Placeholder updated successfully.";
         }
     }
 
     @Override
     public String deletePlaceholder(String name) {
-        log.info("Deleting placeholder with name: {}", name);
+        log.info("deletePlaceholder: Start deleting placeholder with name: {}", name);
         int rowsAffected = placeholderRepository.deleteByPlaceholderName(name);
         if (rowsAffected == 0) {
-            log.warn("No placeholder found with name: {} to delete", name);
-            return "No matching record found to update.";
+            log.info("deletePlaceholder: No placeholder found with name '{}' to delete", name);
+            return "No matching placeholder found for deletion.";
         } else {
-            log.info("Successfully deleted placeholder: {}", name);
-            return "Record deleted.";
+            log.info("deletePlaceholder: Successfully deleted placeholder with name '{}'", name);
+            return "Placeholder deleted successfully.";
         }
     }
 
     @Override
     public UpdationAcknowledgmentResponse<PlaceHolder> placeholderDataHandler(OptionPlaceholderRequest request) {
-        log.info("Handling placeholder data update request");
+        log.info("placeholderDataHandler: Start handling placeholder data update");
+        log.info("placeholderDataHandler: Deleting all existing placeholders");
         placeholderRepository.deleteAllOptions();
-        log.info("Deleted all existing placeholders");
-
         List<PlaceHolder> placeHolders = addPlaceholders(request);
-
-        log.info("Successfully handled placeholder data update. Total new records: {}", placeHolders.size());
+        log.info("placeholderDataHandler: Successfully added {} new placeholder records", placeHolders.size());
         return new UpdationAcknowledgmentResponse<>(placeHolders.size(), placeHolders);
     }
 }
-
