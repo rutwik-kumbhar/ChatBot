@@ -1,8 +1,12 @@
 package com.monocept.chatbot.model.dto;
 
 import com.monocept.chatbot.enums.*;
-
-import lombok.*;
+import com.monocept.chatbot.utils.MediaDtoConverter;
+//import jakarta.persistence.Column;
+//import jakarta.persistence.Convert;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
@@ -11,26 +15,24 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageDto implements Serializable  {
+public class MessageDTO implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    private Long id;
+    private String emailId;
     private String userId;
-    private String email;
+    private String platform;
     private MessageSendType sendType;
-    private MessageType messageType;
     private String messageId;
     private MessageTo messageTo;
+    private MessageType messageType;
     private String text;
     private String replyToMessageId;
     private MessageStatus status;
     private String emoji;
     private Action action;
-//    @Convert(converter = MediaDtoConverter.class)
-    private MediaDto media;
+//    private MediaDto media;
+    private boolean botOption;
     private List<String> options;
-    private boolean botOptions;
-    private String platform;
     private ZonedDateTime createdAt;
-
-
+    private ZonedDateTime updatedAt;
 }
