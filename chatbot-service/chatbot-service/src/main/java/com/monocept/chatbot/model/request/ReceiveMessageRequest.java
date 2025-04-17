@@ -1,0 +1,47 @@
+package com.monocept.chatbot.model.request;
+
+import com.monocept.chatbot.enums.MessageTo;
+import com.monocept.chatbot.enums.StatusFlag;
+import com.monocept.chatbot.model.dto.MediaDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class ReceiveMessageRequest {
+    private String emailId;
+    private String userId;
+    private StatusFlag status;
+    private String platform;
+    private boolean isConversationEnded;
+    private Entry entry;
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Entry {
+        private MessageTo messageTo;
+        private String replyToMessageId;
+        private Message message;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Message{
+        private String text;
+        private boolean botOption;
+//        private List<String> options;
+        private MediaDto media;
+        private Acknowledgement acknowledgement;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Acknowledgement {
+        private String status;
+    }
+}

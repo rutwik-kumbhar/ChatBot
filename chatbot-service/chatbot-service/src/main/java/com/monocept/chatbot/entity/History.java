@@ -1,10 +1,9 @@
-package com.monocept.chatbot.Entity;
+package com.monocept.chatbot.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
 import jakarta.persistence.Table;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

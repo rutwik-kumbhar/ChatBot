@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/chatbot
     username: postgres
-    password: root
+    password: test
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -30,12 +30,18 @@ payload:
 
 redis:
   host: localhost
-  port: 6000
+  port: 6379
 
 mli:
   message:
     send:
       url: http://localhost:8081/api/v1/message/send
-
+    url: https://third-party.com/webhook/message
+socketio:
+  hostname: localhost
+  port: 9092
+  allowed-origins: "*"
+  client:
+    url: http://localhost:9092
 
 
