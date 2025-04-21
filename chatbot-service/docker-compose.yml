@@ -2,24 +2,13 @@ version: '3.8'
 
 services:
 
-  app:
-    image: rutwikkumbhar/chatbot:latest  # <- Replace with your actual image name if different
-    container_name: spring_app
-    ports:
-      - "9090:9092"
-    depends_on:
-      redis:
-        condition: service_healthy
-    environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-    restart: always
 
   backend:
     image: rutwikkumbhar/chatbot:latest
+    pull_policy: always
     container_name: chatbot_backend
     ports:
-      - "9091:9092"
+      - "9091:9095"
     environment:
       - ENV_VAR_NAME=value
     restart: always
