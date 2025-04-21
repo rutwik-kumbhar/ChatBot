@@ -39,8 +39,18 @@ mli:
   message:
     send:
       url: http://host.docker.internal:8081/api/v1/message/send
-      # If port 8081 is hosted on the host machine, use host.docker.internal.
-      # For Linux, host.docker.internal may not work by default — use the host IP or Docker bridge IP instead.
+    url: https://third-party.com/webhook/message
 
 chatbot:
   name: :Ely
+
+socketio:
+  hostname: localhost
+  port: 9092
+  allowed-origins: "*"
+  client:
+    url: http://localhost:9092
+
+  chat:
+    history:
+      cron: "0 7 16 * * ?" # Every day at 4:07 PM
