@@ -1,5 +1,6 @@
 package com.monocept.chatbot.model.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -28,9 +29,11 @@ public class UserInfo {
     @NotBlank(message = "Role is required")
     private String role;
 
+    @JsonIgnore
     @NotBlank(message = "Firebase ID is required")
     private String firebaseId;
 
+    @JsonIgnore
     @NotBlank(message = "Device ID is required")
     private String deviceId;
 }
