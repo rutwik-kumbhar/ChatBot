@@ -163,9 +163,10 @@ public class MessageServiceImpl implements MessageService {
         messageRepository.save(message);
         String sessionId = getSession(message.getUserId());
 //        getSession(receiveMessageDTO.getUserId());
-        List<MessageDto> chatHistoryDetailsEmail = redisChatHistoryRepository.getChatHistoryDetailsEmail(receiveMessageDTO.getEmailId());
-        chatHistoryDetailsEmail.add(modelMapper.map(message, MessageDto.class));
-        redisChatHistoryRepository.saveChatHistoryDetails(receiveMessageDTO.getEmailId(), chatHistoryDetailsEmail);
+//        List<MessageDto> chatHistoryDetailsEmail = redisChatHistoryRepository.getChatHistoryDetailsEmail(receiveMessageDTO.getEmailId());
+//        chatHistoryDetailsEmail.add(modelMapper.map(message, MessageDto.class));
+//        redisChatHistoryRepository.saveChatHistoryDetails(receiveMessageDTO.getEmailId(), chatHistoryDetailsEmail);
+        redisUtility.saveMessageToRedisSortedSet(receiveMessageDTO.getUserId(),message);
         client = clientManager.getClient(receiveMessageDTO.getUserId());
 //        client.sendEvent("chat_message", "botResponse");
         client.sendEvent("message", receiveMessageDTO.getEntry().getMessage().getText());
