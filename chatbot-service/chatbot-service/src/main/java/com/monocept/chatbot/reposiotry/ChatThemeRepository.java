@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface ChatThemeRepository extends JpaRepository<ElyColor, Long> {
      Optional<ElyColor> findByThemeNameIgnoreCase(String themeName);
+     Optional<ElyColor> findByIsActiveTrue();
+
 }

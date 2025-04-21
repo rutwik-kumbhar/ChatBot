@@ -54,14 +54,14 @@ public class ChatThemeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-    @GetMapping("/themeName")
-    public ResponseEntity<MasterResponse<ElyColor>> getThemeByName(@RequestBody ElyThemeName themeName) {
+    @GetMapping("/active-theme")
+    public ResponseEntity<MasterResponse<ElyColor>> getActiveTheme() {
         try {
-            ElyColor theme = service.getThemeByName(themeName.getName());
+            ElyColor theme = service.getActiveTheme();
             MasterResponse<ElyColor> response = new MasterResponse<>(
                     Status.SUCCESS.name(),
                     HttpStatus.OK.value(),
-                    "Theme fetched successfully",
+                    "Active theme fetched successfully",
                     theme
             );
             return ResponseEntity.ok(response);

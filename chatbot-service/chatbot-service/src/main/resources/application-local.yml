@@ -8,13 +8,14 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/chat_history_db
     username: postgres
-    password: postgres
+    password: root
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
+
 logging:
   level:
     root: INFO

@@ -46,6 +46,8 @@ public class ElyColor {
 
     private ZonedDateTime updatedAt;
 
+    @Column(name = "is_active")
+    private boolean isActive;
 
 
 }

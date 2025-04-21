@@ -6,7 +6,10 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 public interface ElyChatThemeService {
-    ElyColor getThemeByName(String themeName);
+  //  ElyColor getThemeByName(String themeName);
+
+    public ElyColor getActiveTheme();
+
   //  List<ElyColor> getAllThemes();
     ElyColor saveTheme(String themeName, String backgroundColor, String userMessageColor,
                        String botMessageColor, String borderColor, String buttonColor,

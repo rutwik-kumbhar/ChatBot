@@ -20,6 +20,16 @@ public class ElyChatThemeServiceImpl implements ElyChatThemeService {
                               String botMessageColor, String borderColor, String buttonColor,
                               String coachOptionColor, String botOptionColor) {
 
+        // Step 1: Deactivate all existing themes
+        List<ElyColor> allThemes = chatThemeRepository.findAll();
+        for (ElyColor theme : allThemes) {
+            theme.setActive(false);
+        }
+        chatThemeRepository.saveAll(allThemes);
+
+        ZonedDateTime now = ZonedDateTime.now();
+
+        // Create or update the new theme and set it as active
         return chatThemeRepository.findByThemeNameIgnoreCase(themeName)
                 .map(existing -> {
                     existing.setBackgroundColor(backgroundColor);
@@ -29,10 +39,10 @@ public class ElyChatThemeServiceImpl implements ElyChatThemeService {
                     existing.setButtonColor(buttonColor);
                     existing.setCoachOptionColor(coachOptionColor);
                     existing.setBotOptionColor(botOptionColor);
-                    existing.setUpdatedAt(ZonedDateTime.now());
+                    existing.setUpdatedAt(now);
+                    existing.setActive(true); // Mark as active
                     return chatThemeRepository.save(existing);
                 }).orElseGet(() -> {
-                    ZonedDateTime now = ZonedDateTime.now();
                     ElyColor theme = new ElyColor();
                     theme.setThemeName(themeName);
                     theme.setBackgroundColor(backgroundColor);
@@ -44,18 +54,17 @@ public class ElyChatThemeServiceImpl implements ElyChatThemeService {
                     theme.setBotOptionColor(botOptionColor);
                     theme.setCreatedAt(now);
                     theme.setUpdatedAt(now);
+                    theme.setActive(true); // Mark as active
                     return chatThemeRepository.save(theme);
                 });
     }
 
+
     @Override
-    public ElyColor getThemeByName(String themeName) {
-        return chatThemeRepository.findByThemeNameIgnoreCase(themeName)
-                .orElseThrow(() -> new RuntimeException("Theme not found: " + themeName));
+    public ElyColor getActiveTheme() {
+        return chatThemeRepository.findByIsActiveTrue()
+                .orElseThrow(() -> new RuntimeException("No active theme found"));
     }
 
-   // @Override
-    //public List<ElyColor> getAllThemes() {
-      //  return chatThemeRepository.findAll();
-    //}
+
 }
