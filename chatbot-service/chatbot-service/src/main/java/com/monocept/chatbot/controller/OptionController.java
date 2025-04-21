@@ -19,7 +19,7 @@ import javax.validation.Valid;
 
 @Slf4j
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/chatbot")
 public class OptionController {
 
     private final  OptionService optionService;
