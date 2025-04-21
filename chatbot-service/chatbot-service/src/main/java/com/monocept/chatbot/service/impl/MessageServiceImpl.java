@@ -4,10 +4,10 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.monocept.chatbot.component.SocketClientManager;
 import com.monocept.chatbot.entity.Message;
-import com.monocept.chatbot.enums.MessageSendType;
-import com.monocept.chatbot.enums.MessageStatus;
+import com.monocept.chatbot.enums.*;
 import com.monocept.chatbot.exceptions.MessageNotFoundException;
 import com.monocept.chatbot.exceptions.SessionNotFoundException;
+import com.monocept.chatbot.model.dto.MediaDto;
 import com.monocept.chatbot.model.dto.MessageDto;
 import com.monocept.chatbot.model.dto.ReceiveMessageDTO;
 import com.monocept.chatbot.model.request.SendMessageRequest;
@@ -18,8 +18,11 @@ import com.monocept.chatbot.model.response.SendMessageResponse;
 import com.monocept.chatbot.reposiotry.MessageRepository;
 import com.monocept.chatbot.reposiotry.RedisChatHistoryRepository;
 import com.monocept.chatbot.service.MessageService;
+import com.monocept.chatbot.utils.MediaDtoConverter;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -31,11 +34,13 @@ import reactor.core.publisher.Mono;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MessageServiceImpl implements MessageService {
 
     @Value("${socketio.client.url}")
@@ -53,21 +58,11 @@ public class MessageServiceImpl implements MessageService {
     private final SocketIOServer server;
     private final SocketClientManager clientManager;
 
-//    public MessageServiceImpl(MessageRepository messageRepository, ModelMapper modelMapper, RedisChatHistoryRepository redisChatHistoryRepository,
-//                              RedisTemplate<String, String> redisTemplate, SocketIOServer server, SocketClientManager clientManager) {
-//        this.messageRepository = messageRepository;
-//        this.modelMapper = modelMapper;
-//        this.redisChatHistoryRepository = redisChatHistoryRepository;
-//        this.redisTemplate = redisTemplate;
-//        this.server = server;
-//        this.clientManager = clientManager;
-//    }
-
     @Override
     @Transactional
     public SendMessageResponse processMessage(SendMessageRequest messageRequest) {
         Message message = getMessage(messageRequest);
-        String session = getSession(message.getUserId());// move before database call
+//        String session = getSession(message.getUserId());// move before database call
         List<MessageDto> chatHistoryDetailsEmail = redisChatHistoryRepository.getChatHistoryDetailsEmail(messageRequest.getEmailId());
         chatHistoryDetailsEmail.add(modelMapper.map(message, MessageDto.class));
         redisChatHistoryRepository.saveChatHistoryDetails(messageRequest.getEmailId(), chatHistoryDetailsEmail);
@@ -87,7 +82,8 @@ public class MessageServiceImpl implements MessageService {
 //            }
 //        }, error -> System.err.println("Error in third-party call: " + error.getMessage()));
 
-
+        sendMessageResponse.setMessageId(message.getMessageId());
+        sendMessageResponse.setAcknowledgement(MessageStatus.DELIVERED);
         return sendMessageResponse;
     }
 
@@ -188,10 +184,10 @@ public class MessageServiceImpl implements MessageService {
 //        message.setEmoji(); not needed
 //        message.setAction();  not needed
         message.setBotOptions(receiveMessageDTO.getEntry().getMessage().isBotOption());
-//        message.setOptions(receiveMessageDTO.getEntry().getMessage().getOptions());
+        message.setOptions(receiveMessageDTO.getEntry().getMessage().getOptions());
         message.setPlatform(receiveMessageDTO.getPlatform());
         message.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
-
+        message.setMedia(MediaDtoConverter.convertToDatabaseColumn(receiveMessageDTO.getEntry().getMessage().getMedia()));
         return message;
     }
 

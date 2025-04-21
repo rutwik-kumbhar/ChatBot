@@ -54,12 +54,12 @@ public class Message {
     @Enumerated(EnumType.STRING)
     private Action action;
 
-    @Column(columnDefinition = "jsonb")
-    @Convert(converter = MediaDtoConverter.class)
-    private MediaDto media;
+    @Column(columnDefinition = "TEXT")
+//    @Convert(converter = MediaDtoConverter.class)
+    private String media;
 
-    @Column(columnDefinition = "jsonb")
-   // @Convert(converter = StringListConverter.class)
+//    @Column(columnDefinition = "jsonb")
+//    @Convert(converter = StringListConverter.class)
     private List<String> options;
 
     private boolean botOptions;

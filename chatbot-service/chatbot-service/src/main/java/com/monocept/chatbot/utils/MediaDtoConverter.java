@@ -5,20 +5,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.monocept.chatbot.model.dto.MediaDto;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@Converter(autoApply = true)
-public class MediaDtoConverter implements AttributeConverter<MediaDto, String> {
+//@Converter(autoApply = false)
+@Slf4j
+public class MediaDtoConverter {
 
-    private final ObjectMapper objectMapper;
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
-    public MediaDtoConverter(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
-
-    @Override
-    public String convertToDatabaseColumn(MediaDto mediaDto) {
+    public static String convertToDatabaseColumn(MediaDto mediaDto) {
+        log.info("convertToDatabaseColumn: Converting media dto to " + mediaDto);
+        if (mediaDto == null) {
+            return null;
+        }
         try {
             return objectMapper.writeValueAsString(mediaDto);
         } catch (JsonProcessingException e) {
@@ -26,8 +27,11 @@ public class MediaDtoConverter implements AttributeConverter<MediaDto, String> {
         }
     }
 
-    @Override
-    public MediaDto convertToEntityAttribute(String dbData) {
+    public static MediaDto convertToEntityAttribute(String dbData) {
+        log.info("convertToEntityAttribute: Converting media dto to " + dbData);
+        if (dbData == null || dbData.isBlank() || dbData.equals("null")) {
+            return null;
+        }
         try {
             return objectMapper.readValue(dbData, MediaDto.class);
         } catch (JsonProcessingException e) {

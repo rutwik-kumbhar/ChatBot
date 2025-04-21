@@ -5,6 +5,7 @@ import com.monocept.chatbot.model.dto.MessageDto;
 import com.monocept.chatbot.reposiotry.ChatHistoryRepository;
 import com.monocept.chatbot.reposiotry.RedisChatHistoryRepository;
 import com.monocept.chatbot.service.ChatHistoryService;
+import com.monocept.chatbot.utils.MediaDtoConverter;
 import com.monocept.chatbot.utils.RedisUtility;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -67,7 +68,7 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
                 message.getStatus(),
                 message.getEmoji(),
                 message.getAction(),
-                message.getMedia(),
+                MediaDtoConverter.convertToEntityAttribute(message.getMedia()),
                 message.getOptions(),
                 message.isBotOptions(),
                 message.getPlatform(),
