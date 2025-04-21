@@ -38,18 +38,19 @@ public class ChatHistoryServiceImpl implements ChatHistoryService {
         this.redisUtility = redisUtility;
     }
 
-    public Page<MessageDto> getChatHistory(String email, int page, int size) {
-        logger.info("Fetching chat history (new) for email: {}, page: {}, size: {}", email, page, size);
+    public Page<MessageDto> getChatHistory(String agentId, int page, int size) {
+        logger.info("Fetching chat history (new) for agentID: {}, page: {}, size: {}", agentId, page, size);
         Pageable pageable = PageRequest.of(page, size);
-        return redisUtility.getPaginatedMessagesFromRedis(email, pageable);
+        return redisUtility.getPaginatedMessagesFromRedis(agentId, pageable);
     }
 
 
-    public Page<MessageDto> getMessagesFromDB(String email, int page, int size) {
-        logger.debug("Querying database for email: {}, page: {}, size: {}", email, page, size);
+    public Page<MessageDto> getMessagesFromDB(String agentId, int page, int size) {
+        logger.debug("Querying database for email: {}, page: {}, size: {}", agentId, page, size);
         Pageable pageable = PageRequest.of(page, size);
-        Page<Message> messagePage = chatHistoryRepository.findByEmail(email, pageable);
-        logger.info("Database query returned {} records for email: {}", messagePage.getContent().size(), email);
+        //Page<Message> messagePage = chatHistoryRepository.findByEmail(email, pageable);
+        Page<Message> messagePage = chatHistoryRepository.findByUserId(agentId, pageable);
+        logger.info("Database query returned {} records for agentId: {}", messagePage.getContent().size(), agentId);
         return messagePage.map(this::convertToDto);
     }
 
