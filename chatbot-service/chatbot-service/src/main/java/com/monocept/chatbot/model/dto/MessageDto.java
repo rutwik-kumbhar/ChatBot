@@ -25,7 +25,6 @@ public class MessageDto implements Serializable  {
     private MessageStatus status;
     private String emoji;
     private Action action;
-    //    @Convert(converter = MediaDtoConverter.class)
     private MediaDto media;
     private List<String> options;
     private boolean botOptions;

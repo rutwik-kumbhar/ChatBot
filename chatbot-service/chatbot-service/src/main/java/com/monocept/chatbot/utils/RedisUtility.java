@@ -128,7 +128,8 @@ public class RedisUtility {
         } catch (Exception e) {
             logger.error("Error saving messages to Redis for {}: {}", email, e.getMessage(), e);
         }
-    }    private static MessageDto convertToDto(Message message) {
+    }
+    private static MessageDto convertToDto(Message message) {
         return new MessageDto(
                 message.getId(),
                 message.getUserId(),
@@ -142,7 +143,7 @@ public class RedisUtility {
                 message.getStatus(),
                 message.getEmoji(),
                 message.getAction(),
-                message.getMedia(),
+                MediaDtoConverter.convertToEntityAttribute(message.getMedia()),
                 message.getOptions(),
                 message.isBotOptions(),
                 message.getPlatform(),
