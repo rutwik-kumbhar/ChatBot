@@ -55,11 +55,8 @@ public class Message {
     private Action action;
 
     @Column(columnDefinition = "TEXT")
-//    @Convert(converter = MediaDtoConverter.class)
     private String media;
 
-//    @Column(columnDefinition = "jsonb")
-//    @Convert(converter = StringListConverter.class)
     private List<String> options;
 
     private boolean botOptions;
