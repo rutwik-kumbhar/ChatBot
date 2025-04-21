@@ -46,8 +46,8 @@ public class RedisUtility {
         }
     }
 
-    public Page<MessageDto> getPaginatedMessagesFromRedis(String email, Pageable pageable) {
-        String key = email + redisSuffix;
+    public Page<MessageDto> getPaginatedMessagesFromRedis(String agentId, Pageable pageable) {
+        String key = agentId + redisSuffix;
         long start = (long) pageable.getPageNumber() * pageable.getPageSize();
         long end = start + pageable.getPageSize() - 1;
 
@@ -55,7 +55,7 @@ public class RedisUtility {
         Set<String> rawMessages = redisTemplate.opsForZSet().reverseRange(key, start, end);
 
         if (!rawMessages.isEmpty()) {
-            logger.info("Fetched {} messages from Redis for {}", rawMessages.size(), email);
+            logger.info("Fetched {} messages from Redis for {}", rawMessages.size(), agentId);
 
             List<MessageDto> messages = rawMessages.stream()
                     .map(this::safeDeserialize)
@@ -67,15 +67,16 @@ public class RedisUtility {
         }
 
         // Step 2: If Redis is empty, fallback to DB
-        logger.info("No chat history in Redis for {}. Fetching from DB...", email);
-        Page<Message> dbMessages =   chatHistoryRepository.findByEmail(email,pageable);
+        logger.info("No chat history in Redis for {}. Fetching from DB...", agentId);
+       // Page<Message> dbMessages =   chatHistoryRepository.findByEmail(email,pageable);
+        Page<Message> dbMessages =   chatHistoryRepository.findByUserId(agentId,pageable);
 
         if (dbMessages == null || dbMessages.isEmpty()) {
             return Page.empty(pageable);
         }
 
         // Step 3: Cache DB messages to Redis sorted set
-        saveMessagesToRedisSortedSet(email, dbMessages.getContent());
+        saveMessagesToRedisSortedSet(agentId, dbMessages.getContent());
 
         // Step 4: Convert to DTO and return
         List<MessageDto> dtoList = dbMessages.getContent().stream()
@@ -94,8 +95,8 @@ public class RedisUtility {
         }
     }
 
-    public void saveMessagesToRedisSortedSet(String email, List<Message> messages) {
-        String key = email +redisSuffix;
+    public void saveMessagesToRedisSortedSet(String agentId, List<Message> messages) {
+        String key = agentId +redisSuffix;
         try {
             for (Message msg : messages) {
                 MessageDto dto = convertToDto(msg);
@@ -106,14 +107,14 @@ public class RedisUtility {
             }
             // Set TTL: 3 days
             redisTemplate.expire(key, redisTTL, TimeUnit.DAYS);
-            logger.info("Saved {} messages to Redis sorted set for {}", messages.size(), email);
+            logger.info("Saved {} messages to Redis sorted set for {}", messages.size(), agentId);
         } catch (Exception e) {
-            logger.error("Error saving messages to Redis for {}: {}", email, e.getMessage(), e);
+            logger.error("Error saving messages to Redis for {}: {}", agentId, e.getMessage(), e);
         }
     }
 
-    public void saveMessageToRedisSortedSet(String email, Message msg) {
-        String key = email +redisSuffix;
+    public void saveMessageToRedisSortedSet(String agentId, Message msg) {
+        String key = agentId +redisSuffix;
         try {
 
                 MessageDto dto = convertToDto(msg);
@@ -124,9 +125,9 @@ public class RedisUtility {
 
             // Set TTL: 3 days
             redisTemplate.expire(key, redisTTL, TimeUnit.DAYS);
-            logger.info("Saved {} message to Redis sorted set for {}", msg, email);
+            logger.info("Saved {} message to Redis sorted set for {}", msg, agentId);
         } catch (Exception e) {
-            logger.error("Error saving messages to Redis for {}: {}", email, e.getMessage(), e);
+            logger.error("Error saving messages to Redis for {}: {}", agentId, e.getMessage(), e);
         }
     }
     private static MessageDto convertToDto(Message message) {

@@ -8,8 +8,9 @@ import javax.validation.constraints.Email;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MessageRequest {
-   @Email(message = "Invalid email format")
-    public String email;
+   //@Email(message = "Invalid email format")
+   // public String email;
+    public String agentId;
     public int page;
     public int size;
 

@@ -22,5 +22,6 @@ public interface ChatHistoryRepository extends JpaRepository<Message, Long> {
   void deleteByDateTimeBefore(@Param("createdAt") ZonedDateTime createdAt);
 
  Page<Message> findByEmail(String email, Pageable pageable);
+ Page<Message> findByUserId(String agentId, Pageable pageable);
 
 }

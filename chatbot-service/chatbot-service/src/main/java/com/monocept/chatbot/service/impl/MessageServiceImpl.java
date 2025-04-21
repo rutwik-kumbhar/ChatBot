@@ -19,6 +19,7 @@ import com.monocept.chatbot.reposiotry.MessageRepository;
 import com.monocept.chatbot.reposiotry.RedisChatHistoryRepository;
 import com.monocept.chatbot.service.MessageService;
 import com.monocept.chatbot.utils.MediaDtoConverter;
+import com.monocept.chatbot.utils.RedisUtility;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -57,15 +58,17 @@ public class MessageServiceImpl implements MessageService {
     private SocketIOClient client;
     private final SocketIOServer server;
     private final SocketClientManager clientManager;
+    private final RedisUtility redisUtility;
 
     @Override
     @Transactional
     public SendMessageResponse processMessage(SendMessageRequest messageRequest) {
         Message message = getMessage(messageRequest);
 //        String session = getSession(message.getUserId());// move before database call
-        List<MessageDto> chatHistoryDetailsEmail = redisChatHistoryRepository.getChatHistoryDetailsEmail(messageRequest.getEmailId());
-        chatHistoryDetailsEmail.add(modelMapper.map(message, MessageDto.class));
-        redisChatHistoryRepository.saveChatHistoryDetails(messageRequest.getEmailId(), chatHistoryDetailsEmail);
+       // List<MessageDto> chatHistoryDetailsEmail = redisChatHistoryRepository.getChatHistoryDetailsEmail(messageRequest.getEmailId());
+       // chatHistoryDetailsEmail.add(modelMapper.map(message, MessageDto.class));
+       // redisChatHistoryRepository.saveChatHistoryDetails(messageRequest.getEmailId(), chatHistoryDetailsEmail);
+        redisUtility.saveMessageToRedisSortedSet(messageRequest.getUserId(),message);
 
         SendMessageResponse sendMessageResponse = new SendMessageResponse();
 //        sendMessageToMLI(messageDTO)
