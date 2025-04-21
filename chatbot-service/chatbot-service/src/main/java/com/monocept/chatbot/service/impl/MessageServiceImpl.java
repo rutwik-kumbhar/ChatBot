@@ -62,7 +62,7 @@ public class MessageServiceImpl implements MessageService {
     @Transactional
     public SendMessageResponse processMessage(SendMessageRequest messageRequest) {
         Message message = getMessage(messageRequest);
-        String session = getSession(message.getUserId());// move before database call
+//        String session = getSession(message.getUserId());// move before database call
         List<MessageDto> chatHistoryDetailsEmail = redisChatHistoryRepository.getChatHistoryDetailsEmail(messageRequest.getEmailId());
         chatHistoryDetailsEmail.add(modelMapper.map(message, MessageDto.class));
         redisChatHistoryRepository.saveChatHistoryDetails(messageRequest.getEmailId(), chatHistoryDetailsEmail);
