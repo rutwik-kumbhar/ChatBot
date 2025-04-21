@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -36,7 +37,7 @@ public class ReceiveMessageDTO implements Serializable {
     public static class Message{
         private String text;
         private boolean botOption;
-//        private List<String> options;
+        private List<String> options;
         private MediaDto media;
         private Acknowledgement acknowledgement;
     }

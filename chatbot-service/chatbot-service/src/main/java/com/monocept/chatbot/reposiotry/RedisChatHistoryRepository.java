@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.monocept.chatbot.entity.Message;
 import com.monocept.chatbot.model.dto.MessageDto;
+import com.monocept.chatbot.utils.MediaDtoConverter;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +73,7 @@ public class RedisChatHistoryRepository {
         dto.setStatus(message.getStatus());
         dto.setEmoji(message.getEmoji());
         dto.setAction(message.getAction());
-        dto.setMedia(message.getMedia());
+        dto.setMedia(MediaDtoConverter.convertToEntityAttribute(message.getMedia()));
         dto.setOptions(message.getOptions());
         dto.setBotOptions(message.isBotOptions());
         dto.setPlatform(message.getPlatform());
