@@ -1,5 +1,5 @@
 server:
-  port: 9092
+  port: 9095
 
 spring:
   config:
@@ -46,10 +46,10 @@ chatbot:
 
 socketio:
   hostname: localhost
-  port: 9092
+  port: 9096
   allowed-origins: "*"
   client:
-    url: http://localhost:9092
+    url: http://localhost:9096
 
   chat:
     history:
