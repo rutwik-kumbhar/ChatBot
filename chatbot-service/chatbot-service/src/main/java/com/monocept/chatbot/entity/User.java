@@ -42,7 +42,7 @@ public class User {
     @Column(length = 100)
     private String firebaseId;
 
-    @Column(length = 100 , nullable = false)
+    @Column(length = 100)
     private String deviceId;
 
     @Enumerated(EnumType.STRING)

@@ -5,13 +5,11 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Slf4j
 @Component
 public class ChatEventHandler {
 
@@ -20,18 +18,13 @@ public class ChatEventHandler {
     private SocketClientManager clientManager;
     public ChatEventHandler(SocketIOServer server, RedisTemplate<String, String> redisTemplate, SocketClientManager clientManager) {
         this.server = server;
+        this.server.start();
         this.redisTemplate = redisTemplate;
         this.clientManager = clientManager;
     }
 
     @PostConstruct
     public void setupListeners() {
-        try {
-            this.server.start();
-        }catch (Exception e){
-           log.info("error starting socket server {} " ,e.getMessage());
-        }
-
         server.addConnectListener(onConnected());
         server.addEventListener("message", String.class, onMessageReceived());
         server.addDisconnectListener(onDisconnected());
