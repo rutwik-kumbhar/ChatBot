@@ -49,5 +49,7 @@ public class ElyColor {
     @Column(name = "is_active")
     private boolean isActive;
 
+    @Column(length = 20)
+    private String platform;
 
 }
