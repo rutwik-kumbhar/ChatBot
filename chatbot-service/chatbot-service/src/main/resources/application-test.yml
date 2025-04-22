@@ -1,5 +1,5 @@
 server:
-  port: 9095
+  port: 9091
 
 spring:
   config:
@@ -48,8 +48,8 @@ socketio:
   hostname: host.docker.internal
   port: 9091
   allowed-origins: "*"
-  client:
-    url: http://host.docker.internal:9091
+#  client:
+#    url: http://host.docker.internal:9091
 
 chat:
   history:
