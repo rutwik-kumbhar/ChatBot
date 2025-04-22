@@ -1,5 +1,5 @@
 server:
-  port: 9095
+  port: 9091
 
 spring:
   config:
@@ -46,10 +46,10 @@ chatbot:
 
 socketio:
   hostname: localhost
-  port: 9091
+  port: 5050
   allowed-origins: "*"
   client:
-    url: http://host.docker.internal:9091
+    url: http://host.docker.internal:9091:5050
 
 chat:
   history:
