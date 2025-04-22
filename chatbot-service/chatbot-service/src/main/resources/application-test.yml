@@ -45,11 +45,11 @@ chatbot:
   name: :Ely
 
 socketio:
-  hostname: host.docker.internal
+  hostname: localhost
   port: 9091
   allowed-origins: "*"
   client:
-    url: http://host.docker.internal:9091
+    url: http://localhost:9091
 
 chat:
   history:
