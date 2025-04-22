@@ -22,8 +22,8 @@ public class MessageController {
     private final MessageService messageService;
     private final ModelMapper modelMapper;
 
-    public MessageController(MessageService messageService, ModelMapper modelMapper) {
-        this.messageService = messageService;
+        public MessageController(MessageService messageService, ModelMapper modelMapper) {
+            this.messageService = messageService;
         this.modelMapper = modelMapper;
     }
 

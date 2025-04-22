@@ -9,7 +9,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class ChatbotServiceApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(ChatbotServiceApplication.class, args);
+		SpringApplication app = new SpringApplication(ChatbotServiceApplication.class);
+		app.setDefaultProperties(getDefaultProperties());
+		app.run(args);
 	}
 
 }
