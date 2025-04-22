@@ -45,7 +45,7 @@ chatbot:
   name: :Ely
 
 socketio:
-  hostname: localhost
+  hostname: host.docker.internal
   port: 9091
   allowed-origins: "*"
   client:
