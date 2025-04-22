@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ElyThemeName {
-    String name;
+public class ElyThemeNameWithPlatform {
+    String platform;
 }

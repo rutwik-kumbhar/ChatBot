@@ -16,4 +16,5 @@ public class ElyThemeRequest {
     private String buttonColor;
     private String coachOptionColor;
     private String botOptionColor;
+    private String platform;
 }

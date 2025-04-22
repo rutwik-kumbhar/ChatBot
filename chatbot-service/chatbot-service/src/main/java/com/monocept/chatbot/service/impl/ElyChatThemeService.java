@@ -8,10 +8,17 @@ import java.util.List;
 public interface ElyChatThemeService {
   //  ElyColor getThemeByName(String themeName);
 
-    public ElyColor getActiveTheme();
+    //public ElyColor getActiveTheme();
 
   //  List<ElyColor> getAllThemes();
+   // ElyColor saveTheme(String themeName, String backgroundColor, String userMessageColor,
+                    //   String botMessageColor, String borderColor, String buttonColor,
+                      // String coachOptionColor, String botOptionColor);
+
+    ElyColor getActiveTheme(String platform);
     ElyColor saveTheme(String themeName, String backgroundColor, String userMessageColor,
                        String botMessageColor, String borderColor, String buttonColor,
-                       String coachOptionColor, String botOptionColor);
+                       String coachOptionColor, String botOptionColor, String platform);
+
+
 }

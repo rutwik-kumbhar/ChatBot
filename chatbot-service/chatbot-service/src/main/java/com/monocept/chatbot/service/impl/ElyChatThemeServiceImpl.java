@@ -18,10 +18,9 @@ public class ElyChatThemeServiceImpl implements ElyChatThemeService {
     @Override
     public ElyColor saveTheme(String themeName, String backgroundColor, String userMessageColor,
                               String botMessageColor, String borderColor, String buttonColor,
-                              String coachOptionColor, String botOptionColor) {
+                              String coachOptionColor, String botOptionColor, String platform) {
 
-        // Step 1: Deactivate all existing themes
-        List<ElyColor> allThemes = chatThemeRepository.findAll();
+        List<ElyColor> allThemes = chatThemeRepository.findAllByPlatformIgnoreCase(platform);
         for (ElyColor theme : allThemes) {
             theme.setActive(false);
         }
@@ -29,8 +28,7 @@ public class ElyChatThemeServiceImpl implements ElyChatThemeService {
 
         ZonedDateTime now = ZonedDateTime.now();
 
-        // Create or update the new theme and set it as active
-        return chatThemeRepository.findByThemeNameIgnoreCase(themeName)
+        return chatThemeRepository.findByThemeNameIgnoreCaseAndPlatformIgnoreCase(themeName, platform)
                 .map(existing -> {
                     existing.setBackgroundColor(backgroundColor);
                     existing.setUserMessageColor(userMessageColor);
@@ -40,11 +38,12 @@ public class ElyChatThemeServiceImpl implements ElyChatThemeService {
                     existing.setCoachOptionColor(coachOptionColor);
                     existing.setBotOptionColor(botOptionColor);
                     existing.setUpdatedAt(now);
-                    existing.setActive(true); // Mark as active
+                    existing.setActive(true);
                     return chatThemeRepository.save(existing);
                 }).orElseGet(() -> {
                     ElyColor theme = new ElyColor();
                     theme.setThemeName(themeName);
+                    theme.setPlatform(platform); // Set platform
                     theme.setBackgroundColor(backgroundColor);
                     theme.setUserMessageColor(userMessageColor);
                     theme.setBotMessageColor(botMessageColor);
@@ -54,17 +53,15 @@ public class ElyChatThemeServiceImpl implements ElyChatThemeService {
                     theme.setBotOptionColor(botOptionColor);
                     theme.setCreatedAt(now);
                     theme.setUpdatedAt(now);
-                    theme.setActive(true); // Mark as active
+                    theme.setActive(true);
                     return chatThemeRepository.save(theme);
                 });
     }
 
-
     @Override
-    public ElyColor getActiveTheme() {
-        return chatThemeRepository.findByIsActiveTrue()
-                .orElseThrow(() -> new RuntimeException("No active theme found"));
+    public ElyColor getActiveTheme(String platform) {
+        return chatThemeRepository.findByIsActiveTrueAndPlatformIgnoreCase(platform)
+                .orElseThrow(() -> new RuntimeException("No active theme found for platform: " + platform));
     }
-
 
 }
