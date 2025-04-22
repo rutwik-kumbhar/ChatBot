@@ -24,7 +24,7 @@ public class UserInfoLoader {
     private final ObjectMapper objectMapper;
     private final CognitoService cognitoService;
 
-    @PostConstruct
+//    @PostConstruct
     public void init() {
         try {
             InputStream inputStream = new ClassPathResource("users.json").getInputStream();

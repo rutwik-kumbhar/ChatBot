@@ -28,14 +28,15 @@ public class SocketIOConfig {
         config.setPort(port);
         config.setOrigin(allowedOrigins);
         config.setAllowCustomRequests(true); // Allows URL parameters
-        config.setUpgradeTimeout(10000); // Increase timeout
-        config.setPingInterval(25000);
-        config.setPingTimeout(60000);
+//        config.setUpgradeTimeout(10000); // Increase timeout
+//        config.setPingInterval(25000);
+//        config.setPingTimeout(60000);
 
         // Socket configuration
         SocketConfig socketConfig = new SocketConfig();
         socketConfig.setReuseAddress(true);
         config.setSocketConfig(socketConfig);
+
 
         // Allow all origins (for development only)
         config.setOrigin("*");

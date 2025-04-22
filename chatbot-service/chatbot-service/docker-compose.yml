@@ -4,11 +4,12 @@ services:
 
 
   backend:
-    image: rutwikkumbhar/chatbot:latest
+    image: rutwikkumbhar/chatbottest:latest
     pull_policy: always
     container_name: chatbot_backend
     ports:
       - "9091:9095"
+      - "5050:5050"
     environment:
       - ENV_VAR_NAME=value
     restart: always
