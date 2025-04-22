@@ -33,7 +33,7 @@ payload:
 
 redis:
   host: redis
-  port: 6379
+  port: 6379  # ✅ fixed to match Docker exposed port
 
 mli:
   message:
@@ -45,7 +45,7 @@ chatbot:
   name: :Ely
 
 socketio:
-  hostname: localhost
+  hostname: 0.0.0.0  # ✅ bind to all interfaces (required in Docker)
   port: 9096
   allowed-origins: "*"
   client:
@@ -53,4 +53,4 @@ socketio:
 
 chat:
   history:
-    cron: "0 7 16 * * ?" # Every day at 4:07 PM
+    cron: "0 7 16 * * ?"  # Every day at 4:07 PM

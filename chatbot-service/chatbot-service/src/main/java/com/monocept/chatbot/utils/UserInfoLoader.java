@@ -24,12 +24,15 @@ public class UserInfoLoader {
     private final ObjectMapper objectMapper;
     private final CognitoService cognitoService;
 
-    @PostConstruct
+//    @PostConstruct
     public void init() {
         try {
             InputStream inputStream = new ClassPathResource("users.json").getInputStream();
             List<UserInfo> userList =objectMapper.readValue(inputStream, new TypeReference<List<UserInfo>>() {});
-            userList.forEach(userInfo ->  cognitoService.getCognitoToken(userInfo));
+            userList.forEach(userInfo -> {
+                log.info("userInfo: {}", userInfo);
+                cognitoService.getCognitoToken(userInfo);
+            });
             log.info("Loaded {} users from users.json", userList.size());
         } catch (Exception e) {
             log.error("Failed to load users from JSON", e);

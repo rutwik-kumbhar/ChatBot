@@ -1,7 +1,18 @@
 FROM openjdk:21-jdk-slim
-EXPOSE 9090
-ADD chatbot-service/target/chatbot-service-0.0.1-SNAPSHOT.jar chatbot-service-0.0.1-SNAPSHOT.jar
-ENTRYPOINT ["java","-jar","/chatbot-service-0.0.1-SNAPSHOT.jar"]
 
+# Install Nginx
+RUN apt-get update && \
+    apt-get install -y nginx && \
+    rm -rf /var/lib/apt/lists/*
 
-#D:\Chat-Bot-App\ChatBot\chatbot-service\Dockerfile
+# Copy Nginx configuration
+COPY default.conf /etc/nginx/conf.d/default.conf
+
+# Copy Spring Boot application
+COPY target/chatbot-service-0.0.1-SNAPSHOT.jar /app/chatbot-service.jar
+
+# Expose ports
+EXPOSE 80 9095
+
+# Start both Nginx and Spring Boot using supervisord or background trick
+CMD sh -c "service nginx start && java -jar /app/chatbot-service.jar"
