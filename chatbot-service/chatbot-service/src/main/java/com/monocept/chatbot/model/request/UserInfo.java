@@ -29,11 +29,11 @@ public class UserInfo {
     @NotBlank(message = "Role is required")
     private String role;
 
-    @JsonIgnore
+
     @NotBlank(message = "Firebase ID is required")
     private String firebaseId;
 
-    @JsonIgnore
+
     @NotBlank(message = "Device ID is required")
     private String deviceId;
 }
