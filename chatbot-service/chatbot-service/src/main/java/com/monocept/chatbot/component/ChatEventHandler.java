@@ -29,7 +29,7 @@ public class ChatEventHandler {
         try {
             this.server.start();
         }catch (Exception e){
-           log.info("error starting socket server");
+           log.info("error starting socket server {} " ,e.getMessage());
         }
 
         server.addConnectListener(onConnected());
