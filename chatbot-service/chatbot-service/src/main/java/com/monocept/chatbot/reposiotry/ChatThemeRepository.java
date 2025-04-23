@@ -9,8 +9,8 @@ import java.util.Optional;
 
 @Repository
 public interface ChatThemeRepository extends JpaRepository<ElyColor, Long> {
-     Optional<ElyColor> findByThemeNameIgnoreCase(String themeName);
-     Optional<ElyColor> findByIsActiveTrue();
+    // Optional<ElyColor> findByThemeNameIgnoreCase(String themeName);
+     //Optional<ElyColor> findByIsActiveTrue();
      Optional<ElyColor> findByIsActiveTrueAndPlatformIgnoreCase(String platform);
      Optional<ElyColor> findByThemeNameIgnoreCaseAndPlatformIgnoreCase(String themeName, String platform);
      List<ElyColor> findAllByPlatformIgnoreCase(String platform);

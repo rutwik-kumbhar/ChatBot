@@ -1,11 +1,14 @@
-//package com.monocept.chatbot;
+package com.monocept.chatbot;
 
 
-//SpringBootTest
-//class ChatbotServiceApplicationTests {
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-//	@Test
-//	void contextLoads() {
-//	}
+@SpringBootTest
+class ChatbotServiceApplicationTests {
 
-//}
+	@Test
+	void contextLoads() {
+	}
+
+}
