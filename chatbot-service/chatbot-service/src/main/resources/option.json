@@ -1,0 +1,42 @@
+[
+    {
+      "name": "HR Related",
+      "icon": "\ud83d\udc69\u200d\ud83d\udcbc"
+    },
+    {
+      "name": "Policy Related",
+      "icon": "\ud83d\udcd1"
+    },
+    {
+      "name": "Medical Insurance",
+      "icon": "\ud83c\udfe5"
+    },
+    {
+      "name": "Policy Tracker",
+      "icon": "\ud83d\udee1"
+    },
+    {
+      "name": "Sales Related",
+      "icon": "\ud83d\udcbc"
+    },
+    {
+      "name": "Product Brochure",
+      "icon": "\ud83d\udcd2"
+    },
+    {
+      "name": "Premium Payment",
+      "icon": "\ud83d\udcb3"
+    },
+    {
+      "name": "Buy New Policy",
+      "icon": "\ud83d\uded2"
+    },
+    {
+      "name": "Download Documents",
+      "icon": "\ud83d\udce5"
+    },
+    {
+      "name": "Update Profile",
+      "icon": "\ud83d\udc64"
+    }
+]

@@ -1,9 +1,10 @@
 package com.monocept.chatbot.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Data
 @Entity
@@ -18,6 +19,6 @@ public class Option {
     @Column(unique = true , length = 200 , nullable = false)
     private String name;
 
-    @Column(length = 100)
+    @Column(length = 255)
     private String icon;
 }

@@ -10,15 +10,12 @@ spring:
     username: postgres
     password: root
     driver-class-name: org.postgresql.Driver
+    sql-script-encoding: UTF-8
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
-  sql:
-    init:
-      mode: always
-
 logging:
   level:
     root: INFO
