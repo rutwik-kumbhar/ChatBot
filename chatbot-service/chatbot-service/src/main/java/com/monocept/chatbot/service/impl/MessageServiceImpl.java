@@ -63,11 +63,8 @@ public class MessageServiceImpl implements MessageService {
     @Override
     @Transactional
     public SendMessageResponse processMessage(SendMessageRequest messageRequest) {
+        log.info("---------------processMessage---------------");
         Message message = getMessage(messageRequest);
-//        String session = getSession(message.getUserId());// move before database call
-       // List<MessageDto> chatHistoryDetailsEmail = redisChatHistoryRepository.getChatHistoryDetailsEmail(messageRequest.getEmailId());
-       // chatHistoryDetailsEmail.add(modelMapper.map(message, MessageDto.class));
-       // redisChatHistoryRepository.saveChatHistoryDetails(messageRequest.getEmailId(), chatHistoryDetailsEmail);
         redisUtility.saveMessageToRedisSortedSet(messageRequest.getUserId(),message);
 
         SendMessageResponse sendMessageResponse = new SendMessageResponse();
@@ -163,14 +160,9 @@ public class MessageServiceImpl implements MessageService {
         messageRepository.save(message);
         String sessionId = getSession(message.getUserId());
 //        getSession(receiveMessageDTO.getUserId());
-//        List<MessageDto> chatHistoryDetailsEmail = redisChatHistoryRepository.getChatHistoryDetailsEmail(receiveMessageDTO.getEmailId());
-//        chatHistoryDetailsEmail.add(modelMapper.map(message, MessageDto.class));
-//        redisChatHistoryRepository.saveChatHistoryDetails(receiveMessageDTO.getEmailId(), chatHistoryDetailsEmail);
         redisUtility.saveMessageToRedisSortedSet(receiveMessageDTO.getUserId(),message);
         client = clientManager.getClient(receiveMessageDTO.getUserId());
-//        client.sendEvent("chat_message", "botResponse");
-        client.sendEvent("message", receiveMessageDTO.getEntry().getMessage().getText());
-        client.sendEvent("chat_message", receiveMessageDTO.getEntry().getMessage().getText());
+        client.sendEvent("chat_message", receiveMessageDTO);
         long epochSeconds = message.getCreatedAt().toEpochSecond();
         return ReceiveMessageResponse.builder().messageId(message.getMessageId()).timestamp(epochSeconds).build();
     }
@@ -193,15 +185,6 @@ public class MessageServiceImpl implements MessageService {
         message.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
         message.setMedia(MediaDtoConverter.convertToDatabaseColumn(receiveMessageDTO.getEntry().getMessage().getMedia()));
         return message;
-    }
-
-    public com.corundumstudio.socketio.SocketIOClient getClientBySessionId(String sessionId) {
-        for (com.corundumstudio.socketio.SocketIOClient client : server.getAllClients()) {
-            if (client.getSessionId().toString().equals(sessionId)) {
-                return client;
-            }
-        }
-        return null; // or throw exception if not found
     }
 
 }
