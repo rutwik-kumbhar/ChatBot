@@ -22,15 +22,17 @@ public class MessageController {
 
     private final MessageService messageService;
     private final ModelMapper modelMapper;
+    private final  BotUtility botUtility;
 
-    public MessageController(MessageService messageService, ModelMapper modelMapper) {
+    public MessageController(MessageService messageService, ModelMapper modelMapper, BotUtility botUtility) {
         this.messageService = messageService;
         this.modelMapper = modelMapper;
+        this.botUtility = botUtility;
     }
 
     @PostMapping("/send-message")
     public ResponseEntity<MasterResponse<SendMessageResponse>> sendMessage(@RequestBody SendMessageRequest request) {
-        ReceiveMessageRequest receiveMessageRequest = BotUtility.getBotResponse(request);
+        ReceiveMessageRequest receiveMessageRequest = botUtility.getBotResponse(request);
         this.sendMessageToUser(receiveMessageRequest);
         SendMessageResponse sendMessageResponse =  messageService.processMessage(request);
         MasterResponse<SendMessageResponse> response = new MasterResponse<>("success",HttpStatus.OK.value(),"Messages sent successfully.", sendMessageResponse);

@@ -14,13 +14,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class BotUtility {
 
 
 
 
     @Async("taskExecutor")
-    public static  ReceiveMessageRequest getBotResponse(SendMessageRequest request){
+    public  ReceiveMessageRequest getBotResponse(SendMessageRequest request){
         Map<String, String>  message  = new HashMap<>();
         message.put("hi","Hello, how may I help you?");
 
@@ -30,7 +31,7 @@ public class BotUtility {
 
     }
 
-    public  static  ReceiveMessageRequest createSendMessageObject(SendMessageRequest sendMessageRequest , String botMessage){
+    public ReceiveMessageRequest createSendMessageObject(SendMessageRequest sendMessageRequest , String botMessage){
 
                 // Sample media details
                 MediaDto.MediaDetail imageDetail = new MediaDto.MediaDetail("jpg", Arrays.asList("https://example.com/image1.jpg"));
