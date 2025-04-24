@@ -61,9 +61,9 @@ public class BotUtility {
     public ReceiveMessageRequest createSendMessageObject(SendMessageRequest sendMessageRequest , String botMessage){
 
                 // Sample media details
-                MediaDto.MediaDetail imageDetail = new MediaDto.MediaDetail("jpg", Arrays.asList("https://example.com/image1.jpg"));
-                MediaDto.MediaDetail videoDetail = new MediaDto.MediaDetail("mp4", Arrays.asList("https://example.com/video1.mp4"));
-                MediaDto.MediaDetail docDetail = new MediaDto.MediaDetail("pdf", Arrays.asList("https://example.com/doc1.pdf"));
+                MediaDto.MediaDetail imageDetail = new MediaDto.MediaDetail("jpg", Arrays.asList("https://monocepthyd-my.sharepoint.com/:i:/g/personal/sarun_monocept_com/EUqNT3tftzdMu3G0nfISlrgBMaerMi5TnxEOv4_sFUDifQ?e=BNNeSE"));
+                MediaDto.MediaDetail videoDetail = new MediaDto.MediaDetail("mp4", Arrays.asList("https://monocepthyd-my.sharepoint.com/:v:/g/personal/sarun_monocept_com/Efu4TMxSuKRPpSVQD_JPF5MBb1CKbAyraxEpcE39dp3rgQ?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=53nOqb"));
+                MediaDto.MediaDetail docDetail = new MediaDto.MediaDetail("pdf", Arrays.asList("https://monocepthyd-my.sharepoint.com/:b:/g/personal/sarun_monocept_com/EZTW1t60fJNOkUJvif-mT_cBQphWYUTmR-A82mFsqTrYcw?e=eJtuQi"));
 
                 // MediaDto using builder
                 MediaDto mediaDto = MediaDto.builder()
