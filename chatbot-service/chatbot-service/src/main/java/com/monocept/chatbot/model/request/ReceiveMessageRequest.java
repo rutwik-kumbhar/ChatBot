@@ -4,9 +4,11 @@ import com.monocept.chatbot.enums.BotCommunicationFlow;
 import com.monocept.chatbot.enums.MessageTo;
 import com.monocept.chatbot.model.dto.MediaDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,6 +20,8 @@ public class ReceiveMessageRequest {
     private boolean isConversationEnded;
     private Entry entry;
 
+
+    @Builder
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
@@ -27,6 +31,7 @@ public class ReceiveMessageRequest {
         private Message message;
     }
 
+    @Builder
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
@@ -38,6 +43,7 @@ public class ReceiveMessageRequest {
         private Acknowledgement acknowledgement;
     }
 
+    @Builder
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
