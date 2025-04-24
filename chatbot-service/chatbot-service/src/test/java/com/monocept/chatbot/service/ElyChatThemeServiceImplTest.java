@@ -26,7 +26,7 @@ public class ElyChatThemeServiceImplTest {
 
     @Test
     void testSaveTheme_NewTheme_ShouldCreateNew() {
-        String platform = "web";
+        String platform = "mspace";
         String themeName = "dark";
 
         when(chatThemeRepository.findAllByPlatformIgnoreCase(platform)).thenReturn(new ArrayList<>());
@@ -48,7 +48,7 @@ public class ElyChatThemeServiceImplTest {
 
     @Test
     void testSaveTheme_ExistingTheme_ShouldUpdate() {
-        String platform = "web";
+        String platform = "mspace";
         String themeName = "light";
 
         ElyColor existing = new ElyColor();
@@ -68,7 +68,7 @@ public class ElyChatThemeServiceImplTest {
 
     @Test
     void testGetActiveTheme_WhenExists() {
-        String platform = "android";
+        String platform = "mspace";
         ElyColor color = new ElyColor();
         color.setPlatform(platform);
         color.setActive(true);
@@ -83,13 +83,13 @@ public class ElyChatThemeServiceImplTest {
 
     @Test
     void testGetActiveTheme_WhenNotExists_ShouldThrowException() {
-        when(chatThemeRepository.findByIsActiveTrueAndPlatformIgnoreCase("ios")).thenReturn(Optional.empty());
+        when(chatThemeRepository.findByIsActiveTrueAndPlatformIgnoreCase("mspace")).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            service.getActiveTheme("ios");
+            service.getActiveTheme("mspace");
         });
 
-        assertEquals("No active theme found for platform: ios", exception.getMessage());
+        assertEquals("No active theme found for platform: mspace", exception.getMessage());
     }
 
 }

@@ -31,6 +31,7 @@ public class ChatThemeControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+
     @Test
     void testSaveTheme_ShouldReturnCreated() throws Exception {
         ElyThemeRequest request = new ElyThemeRequest("dark", "#000", "#fff", "#eee", "#ddd", "#ccc", "#bbb", "#aaa", "web");
@@ -54,19 +55,19 @@ public class ChatThemeControllerTest {
 
     @Test
     void testGetActiveTheme_ShouldReturnOk() throws Exception {
-        ElyThemeNameWithPlatform request = new ElyThemeNameWithPlatform("web");
+        ElyThemeNameWithPlatform request = new ElyThemeNameWithPlatform("mspace");
         ElyColor color = new ElyColor();
         color.setPlatform("web");
         color.setActive(true);
 
-        when(service.getActiveTheme("web")).thenReturn(color);
+        when(service.getActiveTheme("mspace")).thenReturn(color);
 
         int status = mockMvc.perform(get("/api/color-config/active-theme")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("SUCCESS"))
-                .andExpect(jsonPath("$.data.platform").value("web"))
+                .andExpect(jsonPath("$.data.platform").value("mspace"))
                 .andReturn().getResponse().getStatus();
         assertEquals(200, status);
 
