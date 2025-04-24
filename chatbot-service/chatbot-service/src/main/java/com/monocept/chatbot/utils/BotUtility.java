@@ -9,10 +9,7 @@ import com.monocept.chatbot.model.request.SendMessageRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class BotUtility {
@@ -22,8 +19,38 @@ public class BotUtility {
 
     @Async("taskExecutor")
     public  ReceiveMessageRequest getBotResponse(SendMessageRequest request){
-        Map<String, String>  message  = new HashMap<>();
-        message.put("hi","Hello, how may I help you?");
+        Map<String, String> message = new LinkedHashMap<>();
+
+        message.put("Hi", "Hello! 👋 Welcome to MaxSecure Insurance Bot.\nHow can I assist you today?\n1. 📜 View Policy Details\n2. 💰 Check Premium Due\n3. 🧾 Claim Status\n4. 👨‍💼 Talk to Advisor");
+
+        message.put("1", "Sure! Please enter your Policy Number.");
+
+        message.put("POL123456789", "Here are your policy details:\n- Policy Type: Life Insurance\n- Start Date: 12-Jan-2023\n- Status: ✅ Active\n- Premium Due: ₹10,000 on 12-Jan-2025");
+
+        message.put("Check premium", "Your next premium of ₹10,000 is due on 12-Jan-2025. Would you like to:\n1. 💳 Pay Now\n2. 🔔 Set Reminder");
+
+        message.put("Pay Now", "Redirecting to payment gateway... 💳");
+
+        message.put("Set Reminder", "Reminder set! We will notify you 7 days before the due date. ✅");
+
+        message.put("2", "Please provide your Policy Number to check the premium.");
+
+        message.put("Claim", "Sure! Please provide your claim reference number.");
+
+        message.put("CLM987654", "Claim Status:\n- Claim ID: CLM987654\n- Status: ✅ Approved\n- Amount: ₹25,000\n- Processed Date: 03-Mar-2025");
+
+        message.put("3", "Please enter your Claim ID to fetch claim status.");
+
+        message.put("4", "Connecting you to our insurance advisor... 👨‍💼 Please wait.");
+
+        message.put("Talk to agent", "You're now being connected to a live representative. 💬");
+
+        message.put("Thanks", "You're welcome! 😊 Anything else I can help you with?");
+
+        message.put("No", "Thank you for using MaxSecure Insurance Bot. Have a great day! 👋");
+
+        message.put("default", "I'm sorry, I didn't quite catch that. Please choose an option from the menu.");
+
 
         String botMessage  = message.get(request.getText());
 
