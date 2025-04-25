@@ -51,6 +51,9 @@ public class BotUtility {
 
         message.put("default", "I'm sorry, I didn't quite catch that. Please choose an option from the menu.");
 
+        message.put("hr related", "You can ask HR related queries such as leave balance, holidays, or company policies.");
+
+        message.put("policy related", "You can check your insurance policy, update details, or renew it.");
 
         String botMessage  = message.get(request.getText().toLowerCase());
 
