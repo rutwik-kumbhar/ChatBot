@@ -38,5 +38,9 @@
     {
       "name": "Update Profile",
       "icon": "\ud83d\udc64"
+    },
+    {
+    "name": "New option",
+    "icon": "\ud83d\udc64"
     }
 ]
