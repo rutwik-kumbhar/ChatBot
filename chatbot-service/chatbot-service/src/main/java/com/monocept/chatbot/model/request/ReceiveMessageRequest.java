@@ -4,12 +4,14 @@ import com.monocept.chatbot.enums.BotCommunicationFlow;
 import com.monocept.chatbot.enums.MessageTo;
 import com.monocept.chatbot.model.dto.MediaDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ReceiveMessageRequest {
     private String emailId;
     private String userId;
@@ -21,6 +23,7 @@ public class ReceiveMessageRequest {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     public static class Entry {
         private MessageTo messageTo;
         private String replyToMessageId;
@@ -30,8 +33,10 @@ public class ReceiveMessageRequest {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     public static class Message{
         private String text;
+        private String table;
         private boolean botOption;
 //        private List<String> options;
         private MediaDto media;
@@ -41,6 +46,7 @@ public class ReceiveMessageRequest {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     public static class Acknowledgement {
         private String status;
     }

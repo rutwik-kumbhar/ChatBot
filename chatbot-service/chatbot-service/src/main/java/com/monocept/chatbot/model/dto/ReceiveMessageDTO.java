@@ -36,6 +36,7 @@ public class ReceiveMessageDTO implements Serializable {
     @NoArgsConstructor
     public static class Message{
         private String text;
+        private String table;
         private boolean botOption;
         private List<String> options;
         private MediaDto media;
