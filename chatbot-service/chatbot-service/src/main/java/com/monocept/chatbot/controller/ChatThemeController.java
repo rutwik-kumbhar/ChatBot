@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/color-config")
+@RequestMapping("/api/chatbot")
 public class ChatThemeController {
 
     private final ElyChatThemeService service;
@@ -21,7 +21,7 @@ public class ChatThemeController {
         this.service = service;
     }
 
-    @PostMapping("/elychatcolor")
+    @PostMapping("/them")
     public ResponseEntity<MasterResponse<ElyColor>> saveTheme(@RequestBody ElyThemeRequest request) {
         try {
             ElyColor savedTheme = service.saveTheme(
@@ -76,7 +76,7 @@ public class ChatThemeController {
             MasterResponse<ElyColor> response = new MasterResponse<>(
                     Status.FAILURE.name(),
                     HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "Error fetching theme",
+                    "Error fetching theme" + exception.getMessage(),
                     null
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
