@@ -1,6 +1,7 @@
 package com.monocept.chatbot.model.response;
 
 
+import com.monocept.chatbot.entity.Theme;
 import com.monocept.chatbot.enums.BotCommunicationFlow;
 import com.monocept.chatbot.model.dto.NameIconDto;
 import com.monocept.chatbot.model.request.UserInfo;
@@ -20,6 +21,7 @@ public class UserConfigResponse {
     private List<NameIconDto> placeHolders;
     private String botName;
     private BotCommunicationFlow statusFlag;
+    private Theme theme;
     private String dateTime;
 
 }

@@ -1,4 +1,4 @@
-package com.monocept.chatbot.Entity;
+package com.monocept.chatbot.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,15 +10,15 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "elycolor")
-public class ElyColor {
+@Table(name = "theme")
+public class Theme {
 
     @Id
-    @SequenceGenerator(name = "elycolor_seq", sequenceName = "elycolor_seq", initialValue = 1, allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "elycolor_seq")
+    @SequenceGenerator(name = "theme_seq", sequenceName = "theme_seq", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "theme_seq")
     private Long id;
 
-    @Column(length = 50)
+    @Column(length = 50 )
     private String themeName;          // "dark", "light", or custom name
 
     @Column(length = 50)

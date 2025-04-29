@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class GetUserConfigRequest {
     private String agentId;
+    private String platform;
 }

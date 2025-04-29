@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ElyThemeRequest {
+public class ThemeRequest {
     private String themeName;
     private String backgroundColor;
     private String userMessageColor;
