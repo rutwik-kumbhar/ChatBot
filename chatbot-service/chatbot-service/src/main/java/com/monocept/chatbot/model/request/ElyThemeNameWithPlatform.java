@@ -5,10 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
-public class GetUserConfigRequest {
-    private String agentId;
-    private String platform;
+@AllArgsConstructor
+@NoArgsConstructor
+public class ElyThemeNameWithPlatform {
+    String platform;
 }
