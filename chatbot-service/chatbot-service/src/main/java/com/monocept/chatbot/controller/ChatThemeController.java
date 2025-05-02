@@ -23,7 +23,7 @@ public class ChatThemeController {
         this.service = service;
     }
 
-    @PostMapping("/them")
+    @PostMapping("/theme")
     public ResponseEntity<MasterResponse<Theme>> saveTheme(@RequestBody ThemeRequest request) {
         log.info("saveTheme : start ");
         try {
