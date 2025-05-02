@@ -5,6 +5,7 @@ import com.monocept.chatbot.utils.MediaDtoConverter;
 import com.monocept.chatbot.utils.StringListConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.ZonedDateTime;
@@ -14,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "message")
 public class Message {
     @Id

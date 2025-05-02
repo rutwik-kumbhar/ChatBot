@@ -2,10 +2,8 @@ package com.monocept.chatbot.controller;
 
 import com.monocept.chatbot.model.dto.ReceiveMessageDTO;
 import com.monocept.chatbot.model.request.ReceiveMessageRequest;
-import com.monocept.chatbot.model.request.SendMessageRequest;
 import com.monocept.chatbot.model.response.MasterResponse;
 import com.monocept.chatbot.model.response.ReceiveMessageResponse;
-import com.monocept.chatbot.model.response.SendMessageResponse;
 import com.monocept.chatbot.service.MessageService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -25,13 +23,6 @@ public class MessageController {
     public MessageController(MessageService messageService, ModelMapper modelMapper) {
         this.messageService = messageService;
         this.modelMapper = modelMapper;
-    }
-
-    @PostMapping("/send-message")
-    public ResponseEntity<MasterResponse<SendMessageResponse>> sendMessage(@RequestBody SendMessageRequest request) {
-        SendMessageResponse sendMessageResponse =  messageService.processMessage(request);
-        MasterResponse<SendMessageResponse> response = new MasterResponse<>("success",HttpStatus.OK.value(),"Messages sent successfully.", sendMessageResponse);
-        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/message-webhook")
