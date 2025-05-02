@@ -19,6 +19,6 @@ public class Option {
     @Column(unique = true , length = 200 , nullable = false)
     private String name;
 
-    @Column(length = 255)
+    @Column(columnDefinition = "TEXT")
     private String icon;
 }

@@ -22,7 +22,7 @@ public class PlaceHolder {
     @Column( unique = true , length = 200)
     private String name;
 
-    @Column(length = 255)
+    @Column(columnDefinition = "TEXT")
     private String icon;
 
 }

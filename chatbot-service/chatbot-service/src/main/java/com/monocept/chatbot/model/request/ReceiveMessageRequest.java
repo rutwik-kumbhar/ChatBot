@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,6 +21,8 @@ public class ReceiveMessageRequest {
     private boolean isConversationEnded;
     private Entry entry;
 
+
+    @Builder
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
@@ -30,6 +33,7 @@ public class ReceiveMessageRequest {
         private Message message;
     }
 
+    @Builder
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
@@ -43,6 +47,7 @@ public class ReceiveMessageRequest {
         private Acknowledgement acknowledgement;
     }
 
+    @Builder
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
