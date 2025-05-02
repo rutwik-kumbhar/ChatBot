@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class ReceiveMessageRequest {
     private String emailId;
     private String userId;
@@ -22,7 +21,6 @@ public class ReceiveMessageRequest {
     private Entry entry;
 
 
-    @Builder
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
@@ -37,7 +35,6 @@ public class ReceiveMessageRequest {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    @Builder
     public static class Message{
         private String text;
         private String table;
@@ -51,7 +48,6 @@ public class ReceiveMessageRequest {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    @Builder
     public static class Acknowledgement {
         private String status;
     }
