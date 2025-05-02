@@ -117,7 +117,7 @@ public class MessageServiceImpl implements MessageService {
                 .email(messageDTO.getEmailId())
                 .sendType(messageDTO.getSendType())
                 .messageType(messageDTO.getMessageType())
-                .messageId(UUID.randomUUID().toString())
+                .messageId(messageDTO.getMessageId())
                 .messageTo(messageDTO.getMessageTo())
                 .text(messageDTO.getText())
                 .replyToMessageId(messageDTO.getReplyToMessageId())
