@@ -2,14 +2,15 @@ package com.monocept.chatbot.service.impl;
 
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
-import com.monocept.chatbot.component.SocketClientManager;
+import com.monocept.chatbot.component.SocketIOClientProvider;
 import com.monocept.chatbot.entity.Message;
-import com.monocept.chatbot.enums.*;
+import com.monocept.chatbot.enums.MessageSendType;
+import com.monocept.chatbot.enums.MessageStatus;
 import com.monocept.chatbot.exceptions.MessageNotFoundException;
 import com.monocept.chatbot.exceptions.SessionNotFoundException;
-import com.monocept.chatbot.model.dto.MediaDto;
 import com.monocept.chatbot.model.dto.MessageDto;
 import com.monocept.chatbot.model.dto.ReceiveMessageDTO;
+import com.monocept.chatbot.model.request.ReceiveMessageRequest;
 import com.monocept.chatbot.model.request.SendMessageRequest;
 import com.monocept.chatbot.model.response.MLIMessageResponse;
 import com.monocept.chatbot.model.response.MasterResponse;
@@ -18,16 +19,16 @@ import com.monocept.chatbot.model.response.SendMessageResponse;
 import com.monocept.chatbot.reposiotry.MessageRepository;
 import com.monocept.chatbot.reposiotry.RedisChatHistoryRepository;
 import com.monocept.chatbot.service.MessageService;
+import com.monocept.chatbot.utils.BotUtility;
 import com.monocept.chatbot.utils.MediaDtoConverter;
 import com.monocept.chatbot.utils.RedisUtility;
-import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -35,8 +36,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -44,28 +43,22 @@ import java.util.UUID;
 @Slf4j
 public class MessageServiceImpl implements MessageService {
 
-    @Value("${socketio.client.url}")
-    private String socketIoClientUrl;
-
     @Value("${mli.message.url}")
     private String messageUrl;
 
     private final MessageRepository messageRepository;
     private final ModelMapper modelMapper;
     private WebClient.Builder webClientBuilder;
-    private final RedisChatHistoryRepository redisChatHistoryRepository;
     private final RedisTemplate<String, String> redisTemplate;
-    private SocketIOClient client;
-    private final SocketIOServer server;
-    private final SocketClientManager clientManager;
+    private final SocketIOClientProvider clientManager;
     private final RedisUtility redisUtility;
+    private final BotUtility botUtility;
 
     @Override
-    @Transactional
-    public SendMessageResponse processMessage(SendMessageRequest messageRequest) {
-        log.info("---------------processMessage---------------");
+    public void processMessage(SendMessageRequest messageRequest) {
+        log.info("Process Message: {}", messageRequest);
         Message message = getMessage(messageRequest);
-        redisUtility.saveMessageToRedisSortedSet(messageRequest.getUserId(),message);
+        redisUtility.saveLiveMessageToRedisSortedSet(messageRequest.getUserId(), message);
 
         SendMessageResponse sendMessageResponse = new SendMessageResponse();
 //        sendMessageToMLI(messageDTO)
@@ -84,7 +77,14 @@ public class MessageServiceImpl implements MessageService {
 
         sendMessageResponse.setMessageId(message.getMessageId());
         sendMessageResponse.setAcknowledgement(MessageStatus.DELIVERED);
-        return sendMessageResponse;
+
+        SocketIOClient client= clientManager.getClientByUserId(messageRequest.getUserId());
+        MasterResponse<SendMessageResponse> response = new MasterResponse<>("success", HttpStatus.OK.value(),"Messages sent successfully.", sendMessageResponse);
+        client.sendEvent("acknowledgement", response);
+
+        ReceiveMessageRequest receiveMessageRequest = botUtility.getBotResponse(messageRequest);
+        ReceiveMessageDTO requestDto = modelMapper.map(receiveMessageRequest, ReceiveMessageDTO.class);
+        receiveMessage(requestDto);
     }
 
     @Async
@@ -112,35 +112,22 @@ public class MessageServiceImpl implements MessageService {
     }
 
     private Message mapUserMessage(SendMessageRequest messageDTO) {
-        Message message = new Message();
-        message.setUserId(messageDTO.getUserId());
-        message.setEmail(messageDTO.getEmailId());
-        message.setSendType(messageDTO.getSendType());
-        message.setMessageType(messageDTO.getMessageType());
-        message.setMessageId(UUID.randomUUID().toString());
-        message.setMessageTo(messageDTO.getMessageTo());
-        message.setText(messageDTO.getText());
-        message.setReplyToMessageId(messageDTO.getReplyToMessageId());
-        message.setStatus(MessageStatus.PENDING);
-        message.setEmoji(messageDTO.getEmoji());
-        message.setAction(messageDTO.getAction());
-//        message.setOptions();
-//        message.setBotOptions();
-        message.setPlatform(messageDTO.getPlatform());
-        message.setCreatedAt(ZonedDateTime.now());
-        message.setUpdatedAt(ZonedDateTime.now());
-        return message;
-    }
-
-    private String getSession(String userId) {
-        String sessionId = (String) redisTemplate.opsForHash().get("session:user", userId);
-        if(sessionId == null) {
-            throw new SessionNotFoundException(userId);
-        } else{
-           client = clientManager.getClient(userId);
-        }
-        sessionId = (String) redisTemplate.opsForHash().get("session:user", userId);
-        return sessionId;
+        return Message.builder()
+                .userId(messageDTO.getUserId())
+                .email(messageDTO.getEmailId())
+                .sendType(messageDTO.getSendType())
+                .messageType(messageDTO.getMessageType())
+                .messageId(UUID.randomUUID().toString())
+                .messageTo(messageDTO.getMessageTo())
+                .text(messageDTO.getText())
+                .replyToMessageId(messageDTO.getReplyToMessageId())
+                .status(MessageStatus.PENDING)
+                .emoji(messageDTO.getEmoji())
+                .action(messageDTO.getAction())
+                .platform(messageDTO.getPlatform())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
+                .build();
     }
 
     private Mono<MasterResponse<MLIMessageResponse>> sendMessageToMLI(MessageDto messageDTO) {
@@ -158,11 +145,9 @@ public class MessageServiceImpl implements MessageService {
     public ReceiveMessageResponse receiveMessage(ReceiveMessageDTO receiveMessageDTO) {
         Message message = mapBotMessage( receiveMessageDTO);
         messageRepository.save(message);
-        String sessionId = getSession(message.getUserId());
-//        getSession(receiveMessageDTO.getUserId());
-        redisUtility.saveMessageToRedisSortedSet(receiveMessageDTO.getUserId(),message);
-        client = clientManager.getClient(receiveMessageDTO.getUserId());
-        client.sendEvent("chat_message", receiveMessageDTO);
+//        redisUtility.saveMessageToRedisSortedSet(receiveMessageDTO.getUserId(),message);
+        SocketIOClient client= clientManager.getClientByUserId(receiveMessageDTO.getUserId());
+        client.sendEvent("bot_message", receiveMessageDTO);
         long epochSeconds = message.getCreatedAt().toEpochSecond();
         return ReceiveMessageResponse.builder().messageId(message.getMessageId()).timestamp(epochSeconds).build();
     }

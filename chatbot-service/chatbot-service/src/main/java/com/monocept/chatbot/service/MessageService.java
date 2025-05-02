@@ -7,7 +7,7 @@ import com.monocept.chatbot.model.response.ReceiveMessageResponse;
 import com.monocept.chatbot.model.response.SendMessageResponse;
 
 public interface MessageService {
-    SendMessageResponse processMessage(SendMessageRequest request);
+    void processMessage(SendMessageRequest request);
 
     ReceiveMessageResponse receiveMessage(ReceiveMessageDTO receiveMessageDTO);
 }

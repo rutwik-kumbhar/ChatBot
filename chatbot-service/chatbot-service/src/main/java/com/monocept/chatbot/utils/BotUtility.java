@@ -6,12 +6,14 @@ import com.monocept.chatbot.enums.MessageTo;
 import com.monocept.chatbot.model.dto.MediaDto;
 import com.monocept.chatbot.model.request.ReceiveMessageRequest;
 import com.monocept.chatbot.model.request.SendMessageRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
+@Slf4j
 public class BotUtility {
 
 
@@ -55,18 +57,62 @@ public class BotUtility {
 
         message.put("policy related", "You can check your insurance policy, update details, or renew it.");
 
-        String botMessage  = message.get(request.getText().toLowerCase());
+        String userMessage = request.getText().toLowerCase();
+        Map<String, String> media = null;
+        if(!userMessage.equalsIgnoreCase("hi")){
+            media = selectMedia();
+        }
+        String botMessage  = message.get(userMessage);
 
-        return  createSendMessageObject(request , botMessage);
+        return  createSendMessageObject(request , botMessage, media);
 
     }
 
-    public ReceiveMessageRequest createSendMessageObject(SendMessageRequest sendMessageRequest , String botMessage){
+    public ReceiveMessageRequest createSendMessageObject(SendMessageRequest sendMessageRequest , String botMessage, Map<String, String> media){
+
+                String table = "`\n" +
+                        "| Band | Fuel (Per Annum) | Car Driver (Per Annum) | Car Maintenance (Per Annum) |\n" +
+                        "|------|------------------|------------------------|-----------------------------|\n" +
+                        "| 0/UC | At actual        | At actual              | At actual                   |\n" +
+                        "| 1    | At actual        | At actual              | At actual                   |\n" +
+                        "| 2A   | At actual        | At actual              | At actual                   |\n" +
+                        "| 2    | At actual        | At actual              | At actual                   |\n" +
+                        "| 3B   | ₹170,000         | ₹180,000               | ₹100,000                    |\n" +
+                        "| 3A   | ₹170,000         | ₹180,000               | ₹100,000                    |\n" +
+                        "| 3    | ₹170,000         | ₹180,000               | ₹100,000                    |\n" +
+                        "| 4    | ₹100,000         | Not applicable         | ₹80,000                     |\n" +
+                        "| 5    | ₹75,000          | Not applicable         | ₹70,000                     |\n" +
+                        "`";
+                Set<Integer> set = Set.of(0, 2, 4);
+                int num = getRandomBetween0And5();
+                if(!set.contains(num)){
+                    table = null;
+                }
+
+                List<String> mediaList = new ArrayList<>();
+                List<String> imageList = new ArrayList<>();
+                List<String> videoList = new ArrayList<>();
+                List<String> documentList = new ArrayList<>();
+                if(media != null){
+//                    String value = getMedia(media);
+//                    log.info("createSendMessageObject : Value: " + value);
+                    Set<Map.Entry<String, String>> keys = media.entrySet();
+                    for(Map.Entry<String, String> entry : keys){
+                        if (entry.getKey().equalsIgnoreCase("image")){
+                            imageList.add(entry.getValue());
+                        } else if(entry.getKey().equalsIgnoreCase("video")){
+                            videoList.add(entry.getValue());
+                        } else {
+                            documentList.add(entry.getValue());
+                        }
+                    }
+
+                }
 
                 // Sample media details
-                MediaDto.MediaDetail imageDetail = new MediaDto.MediaDetail("jpg", Arrays.asList("https://monocepthyd-my.sharepoint.com/:i:/g/personal/sarun_monocept_com/EUqNT3tftzdMu3G0nfISlrgBMaerMi5TnxEOv4_sFUDifQ?e=BNNeSE"));
-                MediaDto.MediaDetail videoDetail = new MediaDto.MediaDetail("mp4", Arrays.asList("https://monocepthyd-my.sharepoint.com/:v:/g/personal/sarun_monocept_com/Efu4TMxSuKRPpSVQD_JPF5MBb1CKbAyraxEpcE39dp3rgQ?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=53nOqb"));
-                MediaDto.MediaDetail docDetail = new MediaDto.MediaDetail("pdf", Arrays.asList("https://monocepthyd-my.sharepoint.com/:b:/g/personal/sarun_monocept_com/EZTW1t60fJNOkUJvif-mT_cBQphWYUTmR-A82mFsqTrYcw?e=eJtuQi"));
+                MediaDto.MediaDetail imageDetail = new MediaDto.MediaDetail("jpg", imageList);
+                MediaDto.MediaDetail videoDetail = new MediaDto.MediaDetail("mp4", videoList);
+                MediaDto.MediaDetail docDetail = new MediaDto.MediaDetail("pdf", documentList);
 
                 // MediaDto using builder
                 MediaDto mediaDto = MediaDto.builder()
@@ -83,6 +129,7 @@ public class BotUtility {
                 // Message using builder
                 ReceiveMessageRequest.Message message = ReceiveMessageRequest.Message.builder()
                         .text(botMessage)
+                        .table(table)
                         .botOption(true)
                         .media(mediaDto)
                         .acknowledgement(ack)
@@ -109,6 +156,64 @@ public class BotUtility {
 
             }
 
+
+    public static int getRandomBetween0And2() {
+        Random random = new Random();
+        return random.nextInt(3); // generates 0, 1, or 2
+    }
+
+    public static int getRandomBetween0And5() {
+        Random random = new Random();
+        return random.nextInt(5); // generates 0, 1, or 2
+    }
+
+    public String getMediaData(String media, int number){
+        List<String> image = List.of("https://media.slidesgo.com/storage/54799/upload.png",
+                "https://static.vecteezy.com/system/resources/previews/007/432/016/non_2x/renew-word-on-white-keyboard-free-photo.jpg",
+                        "https://picsum.photos/200");
+
+        List<String> video = List.of("https://www.pexels.com/video/person-writing-on-a-board-7164232/" ,
+                "https://www.pexels.com/video/a-person-explaining-a-document-7821854/",
+                "https://www.pexels.com/video/an-agent-talking-to-his-client-while-holding-documents-7822017/");
+
+        List<String> document = List.of("https://www.iii.org/sites/default/files/docs/pdf/Insurance_Handbook_20103.pdf",
+                "https://www.sigc.edu/sigc/department/commerce/studymet/Insurance.pdf",
+                "https://www.mikerussonline.com/CA/pdfs/1.pdf");
+
+        switch (media)
+        {
+            case "document":
+                return document.get(number);
+            case "video":
+                return video.get(number);
+            case "image":
+                return image.get(number);
+            default:
+              return "";
+        }
+
+    }
+
+    public Map<String, String> selectMedia(){
+        List<String> list = List.of("document", "video", "image");
+        int number = getRandomBetween0And2();
+        String media =  list.get(number);
+        Map<String, String> map = new HashMap<>();
+        map.put(media, getMediaData(media, number));
+        return map;
+    }
+
+    public String getMedia(Map<String, String> media){
+        List<String> list = List.of("document", "video", "image");
+        log.info("getMedia: start " + media);
+        for(String l:list){
+            String m = media.get(l);
+            log.info("getMedia: value of l " + l);
+            log.info("getMedia: value of m " + m);
+            if(m != null) return m;
+        }
+        return list.get(getRandomBetween0And2());
+    }
 
 
 }

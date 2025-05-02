@@ -21,10 +21,10 @@ public class ReceiveMessageRequest {
     private Entry entry;
 
 
-    @Builder
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     public static class Entry {
         private MessageTo messageTo;
         private String replyToMessageId;
@@ -37,6 +37,7 @@ public class ReceiveMessageRequest {
     @NoArgsConstructor
     public static class Message{
         private String text;
+        private String table;
         private boolean botOption;
 //        private List<String> options;
         private MediaDto media;

@@ -14,9 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -28,6 +26,7 @@ public class RedisUtility {
     private final RedisChatHistoryRepository redisChatHistoryRepository;
     private final ChatHistoryRepository chatHistoryRepository;
     private final String redisSuffix=":chatMessagesSorted";
+    private final String liveRedisSuffix=":liveSession";
     private final int redisTTL=3;
 
     public RedisUtility(ObjectMapper objectMapper, RedisTemplate<String, String> redisTemplate, RedisChatHistoryRepository redisChatHistoryRepository, ChatHistoryRepository chatHistoryRepository) {
@@ -151,6 +150,73 @@ public class RedisUtility {
                 message.getCreatedAt()
         );
     }
+
+    public void saveLiveMessageToRedisSortedSet(String agentId, Message msg) {
+        String key = agentId + liveRedisSuffix;
+        try {
+            MessageDto dto = convertToDto(msg);
+            String json = objectMapper.writeValueAsString(dto);
+            // Use message creation timestamp as score
+            double score = msg.getCreatedAt().toInstant().toEpochMilli();
+            redisTemplate.opsForZSet().add(key, json, score);
+
+            // Set TTL: 1 days
+            redisTemplate.expire(key, 1, TimeUnit.DAYS);
+            logger.info("Saved {} message to Redis sorted set for {}", msg, agentId);
+        } catch (Exception e) {
+            logger.error("Error saving messages to Redis for {}: {}", agentId, e.getMessage(), e);
+        }
+    }
+
+    public List<Message> getLiveMessagesFromRedisSortedSet(String agentId) {
+        String key = agentId + liveRedisSuffix;
+        try {
+            // Get all elements from the ZSet
+            Set<String> jsonMessages = redisTemplate.opsForZSet().range(key, 0, -1);
+
+            if (jsonMessages == null || jsonMessages.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            // Convert JSON strings back to MessageDto -> Message
+            List<Message> messages = new ArrayList<>();
+            for (String json : jsonMessages) {
+                MessageDto dto = objectMapper.readValue(json, MessageDto.class);
+                messages.add(convertToEntity(dto)); // You need to implement this
+            }
+
+            return messages;
+        } catch (Exception e) {
+            logger.error("Error fetching messages from Redis for {}: {}", agentId, e.getMessage(), e);
+            return Collections.emptyList();
+        }
+    }
+
+    public Message convertToEntity(MessageDto dto) {
+        if (dto == null) return null;
+
+        return Message.builder()
+                .userId(dto.getUserId())
+                .email(dto.getEmail())
+                .messageId(dto.getMessageId())
+                .messageTo(dto.getMessageTo())
+                .text(dto.getText())
+                .replyToMessageId(dto.getReplyToMessageId())
+                .status(dto.getStatus())
+                .sendType(dto.getSendType())
+                .messageType(dto.getMessageType())
+                .emoji(dto.getEmoji())
+                .action(dto.getAction())
+                .platform(dto.getPlatform())
+                .botOptions(dto.isBotOptions())
+                .options(dto.getOptions())
+//                .media(dto.getMedia())
+                .createdAt(dto.getCreatedAt())
+//                .updatedAt(dto.getUpdatedAt())
+                .build();
+    }
+
+
 }
 
  
