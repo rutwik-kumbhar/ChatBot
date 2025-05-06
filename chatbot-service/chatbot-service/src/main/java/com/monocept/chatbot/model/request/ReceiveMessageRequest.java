@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @Data
 @AllArgsConstructor
@@ -40,7 +42,7 @@ public class ReceiveMessageRequest {
         private String text;
         private String table;
         private boolean botOption;
-//        private List<String> options;
+        private List<String> options;
         private MediaDto media;
         private Acknowledgement acknowledgement;
     }

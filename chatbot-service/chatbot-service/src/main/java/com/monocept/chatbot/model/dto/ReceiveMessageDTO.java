@@ -23,7 +23,7 @@ public class ReceiveMessageDTO implements Serializable {
     private boolean isConversationEnded;
     private Entry entry;
     private String messageId;
-    private ZonedDateTime createdAt;
+    private String createdAt;
 
     @Data
     @AllArgsConstructor

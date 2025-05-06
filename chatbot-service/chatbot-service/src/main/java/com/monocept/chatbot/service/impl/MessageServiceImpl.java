@@ -79,15 +79,23 @@ public class MessageServiceImpl implements MessageService {
         sendMessageResponse.setAcknowledgement(MessageStatus.DELIVERED);
 
         SocketIOClient client= clientManager.getClientByUserId(messageRequest.getUserId());
+        log.info("processMessage : client : {} ", client);
         MasterResponse<SendMessageResponse> response = new MasterResponse<>("success", HttpStatus.OK.value(),"Messages sent successfully.", sendMessageResponse);
         client.sendEvent("acknowledgement", response);
 
         ReceiveMessageRequest receiveMessageRequest = botUtility.getBotResponse(messageRequest);
-        ReceiveMessageDTO requestDto = modelMapper.map(receiveMessageRequest, ReceiveMessageDTO.class);
-        receiveMessage(requestDto);
+        log.info("processMessage : receiveMessageRequest {}" , receiveMessageRequest);
+        try {
+            ReceiveMessageDTO requestDto = modelMapper.map(receiveMessageRequest, ReceiveMessageDTO.class);
+            log.info("processMessage : requestDto : {}" , requestDto);
+            receiveMessage(requestDto);
+        }catch (Exception exception){
+            log.info("processMessage : Error {}", exception.getMessage());
+        }
+
     }
 
-    @Async
+
     public Message getMessage(SendMessageRequest messageDTO) {
         Message message;
         if(messageDTO.getSendType().equals(MessageSendType.REACTION)){
@@ -147,7 +155,9 @@ public class MessageServiceImpl implements MessageService {
         messageRepository.save(message);
         log.info("Message received: {}", message);
         receiveMessageDTO.setMessageId(message.getMessageId());
-        receiveMessageDTO.setCreatedAt(message.getCreatedAt());
+        log.info("receiveMessage : date {} " , message.getCreatedAt());
+
+        receiveMessageDTO.setCreatedAt(message.getCreatedAt().toString());
 //        redisUtility.saveMessageToRedisSortedSet(receiveMessageDTO.getUserId(),message);
         SocketIOClient client= clientManager.getClientByUserId(receiveMessageDTO.getUserId());
         client.sendEvent("bot_message", receiveMessageDTO);
