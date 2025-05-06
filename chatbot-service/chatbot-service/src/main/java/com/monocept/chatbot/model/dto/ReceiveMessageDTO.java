@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Data
@@ -21,6 +22,8 @@ public class ReceiveMessageDTO implements Serializable {
     private String platform;
     private boolean isConversationEnded;
     private Entry entry;
+    private String messageId;
+    private ZonedDateTime createdAt;
 
     @Data
     @AllArgsConstructor

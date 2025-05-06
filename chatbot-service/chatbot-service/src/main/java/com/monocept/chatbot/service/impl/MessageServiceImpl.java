@@ -145,6 +145,9 @@ public class MessageServiceImpl implements MessageService {
     public ReceiveMessageResponse receiveMessage(ReceiveMessageDTO receiveMessageDTO) {
         Message message = mapBotMessage( receiveMessageDTO);
         messageRepository.save(message);
+        log.info("Message received: {}", message);
+        receiveMessageDTO.setMessageId(message.getMessageId());
+        receiveMessageDTO.setCreatedAt(message.getCreatedAt());
 //        redisUtility.saveMessageToRedisSortedSet(receiveMessageDTO.getUserId(),message);
         SocketIOClient client= clientManager.getClientByUserId(receiveMessageDTO.getUserId());
         client.sendEvent("bot_message", receiveMessageDTO);
@@ -167,7 +170,7 @@ public class MessageServiceImpl implements MessageService {
         message.setBotOptions(receiveMessageDTO.getEntry().getMessage().isBotOption());
         message.setOptions(receiveMessageDTO.getEntry().getMessage().getOptions());
         message.setPlatform(receiveMessageDTO.getPlatform());
-        message.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
+        message.setCreatedAt(ZonedDateTime.now());
         message.setMedia(MediaDtoConverter.convertToDatabaseColumn(receiveMessageDTO.getEntry().getMessage().getMedia()));
         return message;
     }

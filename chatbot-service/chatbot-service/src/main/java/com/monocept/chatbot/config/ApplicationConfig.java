@@ -36,6 +36,7 @@ public class ApplicationConfig {
         // Enable pretty printing for JSON output
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         return objectMapper;
     }

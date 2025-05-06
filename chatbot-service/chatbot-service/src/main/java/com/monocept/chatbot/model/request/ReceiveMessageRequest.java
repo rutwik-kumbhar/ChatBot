@@ -19,6 +19,7 @@ public class ReceiveMessageRequest {
     private String platform;
     private boolean isConversationEnded;
     private Entry entry;
+    private String messageId;
 
 
     @Data
