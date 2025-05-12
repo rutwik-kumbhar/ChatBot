@@ -1,0 +1,14 @@
+ [
+    {
+      "name": "Ask about medical insurance",
+      "icon": "\ud83c\udfa5"
+    },
+    {
+      "name": "Ask about HR related queries",
+      "icon": "\u2764\ufe0f"
+    },
+    {
+      "name": "Ask about policy related queries",
+      "icon": "\ud83d\ude97"
+    }
+ ]
