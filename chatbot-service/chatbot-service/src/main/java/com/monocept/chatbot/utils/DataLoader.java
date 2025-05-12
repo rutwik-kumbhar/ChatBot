@@ -27,7 +27,7 @@ public class DataLoader {
     private final OptionRepository optionRepository;
     private final PlaceholderRepository placeholderRepository;
 
-    @PostConstruct
+//    @PostConstruct
     public void init() {
         try {
             // Correctly load the respective JSON files

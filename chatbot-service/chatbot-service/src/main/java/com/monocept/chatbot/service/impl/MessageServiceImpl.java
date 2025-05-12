@@ -1,15 +1,14 @@
 package com.monocept.chatbot.service.impl;
 
 import com.corundumstudio.socketio.SocketIOClient;
-import com.corundumstudio.socketio.SocketIOServer;
 import com.monocept.chatbot.component.SocketIOClientProvider;
 import com.monocept.chatbot.entity.Message;
 import com.monocept.chatbot.enums.MessageSendType;
 import com.monocept.chatbot.enums.MessageStatus;
 import com.monocept.chatbot.exceptions.MessageNotFoundException;
-import com.monocept.chatbot.exceptions.SessionNotFoundException;
 import com.monocept.chatbot.model.dto.MessageDto;
 import com.monocept.chatbot.model.dto.ReceiveMessageDTO;
+import com.monocept.chatbot.model.request.MessageCountRequest;
 import com.monocept.chatbot.model.request.ReceiveMessageRequest;
 import com.monocept.chatbot.model.request.SendMessageRequest;
 import com.monocept.chatbot.model.response.MLIMessageResponse;
@@ -17,7 +16,6 @@ import com.monocept.chatbot.model.response.MasterResponse;
 import com.monocept.chatbot.model.response.ReceiveMessageResponse;
 import com.monocept.chatbot.model.response.SendMessageResponse;
 import com.monocept.chatbot.reposiotry.MessageRepository;
-import com.monocept.chatbot.reposiotry.RedisChatHistoryRepository;
 import com.monocept.chatbot.service.MessageService;
 import com.monocept.chatbot.utils.BotUtility;
 import com.monocept.chatbot.utils.MediaDtoConverter;
@@ -29,13 +27,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -163,6 +163,12 @@ public class MessageServiceImpl implements MessageService {
         client.sendEvent("bot_message", receiveMessageDTO);
         long epochSeconds = message.getCreatedAt().toEpochSecond();
         return ReceiveMessageResponse.builder().messageId(message.getMessageId()).timestamp(epochSeconds).build();
+    }
+
+    @Override
+    public Map<String, Long> getMessageCountSendByBot(MessageCountRequest request) {
+        long count = messageRepository.countDeliveredBotMessagesByAgentId(request.getUserId());
+       return   Collections.singletonMap("count", count);
     }
 
     private Message mapBotMessage(ReceiveMessageDTO receiveMessageDTO) {
